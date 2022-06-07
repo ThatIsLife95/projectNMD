@@ -1,6 +1,6 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.constants.ConstantDefault;
+import com.example.demo.constants.DefaultConstants;
 import com.example.demo.constants.HttpStatusConstants;
 import com.example.demo.dto.RegistrationDto;
 import com.example.demo.entity.auth.AuthDevice;
@@ -51,7 +51,7 @@ public class RegistrationServiceImpl implements RegistrationService {
                     registrationDto.getEmail(),
                     bCryptPasswordEncoder.encode(registrationDto.getPassword()),
                     true,
-                    LocalDateTime.now().plusMonths(ConstantDefault.EXPIRE_MONTH_PASSWORD)
+                    LocalDateTime.now().plusMonths(DefaultConstants.EXPIRE_MONTH_PASSWORD)
             );
             AuthDevice device = new AuthDevice(
                     deviceLocation,

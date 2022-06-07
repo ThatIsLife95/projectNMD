@@ -1,6 +1,6 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.constants.ConstantDefault;
+import com.example.demo.constants.DefaultConstants;
 import com.example.demo.service.EmailService;
 import lombok.AllArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -28,9 +28,9 @@ public class EmailServiceImpl implements EmailService {
     public void sendMessage(String to, String subject, Map<String, Object> templateModel) throws IOException, MessagingException {
         Context thymeleafContext = new Context();
         thymeleafContext.setVariables(templateModel);
-        String htmlBody = thymeleafTemplateEngine.process(ConstantDefault.MAIL_TEMPLATE, thymeleafContext);
+        String htmlBody = thymeleafTemplateEngine.process(DefaultConstants.MAIL_TEMPLATE, thymeleafContext);
         MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true, ConstantDefault.ENCODING);
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, DefaultConstants.ENCODING);
         helper.setTo(to);
         helper.setSubject(subject);
         helper.setText(htmlBody, true);

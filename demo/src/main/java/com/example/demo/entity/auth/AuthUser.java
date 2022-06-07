@@ -35,7 +35,7 @@ public class AuthUser {
     private String displayName;
 
     @Basic
-    @Column(name = "email", nullable = false, unique = true)
+    @Column(name = "email", unique = true)
     private String email;
 
     @Basic

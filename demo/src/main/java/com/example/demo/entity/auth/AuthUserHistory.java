@@ -23,7 +23,7 @@ public class AuthUserHistory {
 
     @Basic
     @Column(name = "display_name")
-    private String fullName;
+    private String displayName;
 
     @Basic
     @Column(name = "email")
@@ -32,10 +32,6 @@ public class AuthUserHistory {
     @Basic
     @Column(name = "password")
     private String password;
-
-    @Basic
-    @Column(name = "phone_number")
-    private String phoneNumber;
 
     @Basic
     @Column(name = "action_name")

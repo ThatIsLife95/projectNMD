@@ -1,6 +1,6 @@
 package com.example.demo.service.impl.auth;
 
-import com.example.demo.constants.ConstantDefault;
+import com.example.demo.constants.DefaultConstants;
 import com.example.demo.constants.HttpStatusConstants;
 import com.example.demo.dto.ResponseDto;
 import com.example.demo.entity.auth.AuthToken;
@@ -22,7 +22,7 @@ public class AuthTokenServiceImpl implements AuthTokenService {
         AuthToken authToken = tokenRepository.findByEmail(email).orElse(new AuthToken(email));
         authToken.setToken(token);
         authToken.setConfirmed(false);
-        authToken.setExpiredDate(LocalDateTime.now().plusMinutes(ConstantDefault.EXPIRE_MINUTE_LINK));
+        authToken.setExpiredDate(LocalDateTime.now().plusMinutes(DefaultConstants.EXPIRE_MINUTE_LINK));
         tokenRepository.save(authToken);
     }
 

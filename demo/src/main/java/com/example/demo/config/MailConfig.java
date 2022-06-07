@@ -1,6 +1,6 @@
 package com.example.demo.config;
 
-import com.example.demo.constants.ConstantDefault;
+import com.example.demo.constants.DefaultConstants;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,8 +21,8 @@ public class MailConfig {
         mailSender.setHost("smtp.gmail.com");
         mailSender.setPort(587);
 
-        mailSender.setUsername(ConstantDefault.MY_EMAIL);
-        mailSender.setPassword(ConstantDefault.MY_PASSWORD);
+        mailSender.setUsername(DefaultConstants.MY_EMAIL);
+        mailSender.setPassword(DefaultConstants.MY_PASSWORD);
 
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", "smtp");
@@ -36,17 +36,17 @@ public class MailConfig {
     @Bean
     public SpringResourceTemplateResolver thymeleafTemplateResolver() {
         SpringResourceTemplateResolver templateResolver = new SpringResourceTemplateResolver();
-        templateResolver.setPrefix(ConstantDefault.MAIL_TEMPLATES_PATH);
-        templateResolver.setSuffix(ConstantDefault.SUFFIX);
-        templateResolver.setTemplateMode(ConstantDefault.TEMPLATE_MODE);
+        templateResolver.setPrefix(DefaultConstants.MAIL_TEMPLATES_PATH);
+        templateResolver.setSuffix(DefaultConstants.SUFFIX);
+        templateResolver.setTemplateMode(DefaultConstants.TEMPLATE_MODE);
         return templateResolver;
     }
 
     @Bean
     public ResourceBundleMessageSource emailMessageSource() {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
-        messageSource.setBasename(ConstantDefault.MESSAGE_SOURCE_NAME);
-        messageSource.setDefaultEncoding(ConstantDefault.ENCODING);
+        messageSource.setBasename(DefaultConstants.MESSAGE_SOURCE_NAME);
+        messageSource.setDefaultEncoding(DefaultConstants.ENCODING);
         return messageSource;
     }
 

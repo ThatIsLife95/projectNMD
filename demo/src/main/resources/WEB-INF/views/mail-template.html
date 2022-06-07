@@ -24,13 +24,13 @@
                                         <tr>
                                             <td align="center"
                                                 style="font-size:25px;font-family:Helvetica,Arial,sans-serif;color:#333333;padding-top:30px"
-                                                th:text="#{greeting}">
+                                                th:text="${greeting}">
                                             </td>
                                         </tr>
                                         <tr>
                                             <td align="center"
                                                 style="padding:20px 0 0 0;font-size:16px;line-height:25px;font-family:Helvetica,Arial,sans-serif;color:#666666"
-                                                th:text="#{content}">
+                                                th:text="#{content(${text})}">
                                             </td>
                                         </tr>
                                         </tbody>
@@ -52,7 +52,7 @@
                                                         <td align="center"><a
                                                                 th:href="${link}"
                                                                 style="font-size:16px;font-family:Helvetica,Arial,sans-serif;font-weight:normal;color:#ffffff;text-decoration:none;background-color:#5d9cec;border-top:15px solid #5d9cec;border-bottom:15px solid #5d9cec;border-left:25px solid #5d9cec;border-right:25px solid #5d9cec;border-radius:3px;display:inline-block"
-                                                                target="_blank" th:text="#{button}"></a></td>
+                                                                target="_blank" th:text="${button}"></a></td>
                                                     </tr>
                                                     </tbody>
                                                 </table>

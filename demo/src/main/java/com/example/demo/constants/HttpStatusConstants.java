@@ -29,4 +29,16 @@ public class HttpStatusConstants {
     public static final String PERMISSION_EXISTED_MESSAGE = "Permission đã tồn tại";
     public static final String ROLE_EXISTED_CODE = "009";
     public static final String ROLE_EXISTED_MESSAGE = "Role đã tồn tại";
+    public static final String VERIFY_NEW_DEVICE_CODE = "010";
+    public static final String VERIFY_NEW_DEVICE_MESSAGE = "Bạn đang đăng nhập thiết bị mới, vui lòng kiểm tra email của bạn để xác minh!";
+    public static final String LOCKED_ACCOUNT_CODE = "011";
+    public static final String LOCKED_ACCOUNT_MESSAGE = "Tài khoản của bạn đã bị khóa vui lòng liên hệ Admin để mở khóa";
+    public static final String INVALID_EMAIL_OR_PASSWORD_CODE = "012";
+    public static final String INVALID_EMAIL_OR_PASSWORD_MESSAGE = "Tài khoản hoặc mật khẩu không đúng";
+    public static final String EXPIRED_PASSWORD_CODE = "013";
+    public static final String EXPIRED_PASSWORD_MESSAGE = "Mật khẩu của bạn đã hết hạn. Bạn vui lòng đổi mật khẩu!";
+
+    //COMMON ERROR
+    public final static String UNAVAILABLE_CODE = "999";
+    public final static String UNAVAILABLE_MESSAGE = "Xin lỗi, dịch vụ của chúng tôi tạm thời bị gián đoạn. Vui lòng thử lại sau";
 }
