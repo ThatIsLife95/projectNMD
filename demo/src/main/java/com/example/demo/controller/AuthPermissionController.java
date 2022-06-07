@@ -4,7 +4,7 @@ package com.example.demo.controller;
 import com.example.demo.constants.UriConstants;
 import com.example.demo.dto.PermissionDto;
 import com.example.demo.dto.ResponseDto;
-import com.example.demo.service.auth.AuthPermissionService;
+import com.example.demo.service.AuthPermissionService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;

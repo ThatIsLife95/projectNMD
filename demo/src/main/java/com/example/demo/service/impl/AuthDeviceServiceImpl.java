@@ -1,11 +1,11 @@
-package com.example.demo.service.impl.auth;
+package com.example.demo.service.impl;
 
 import com.example.demo.constants.HttpStatusConstants;
 import com.example.demo.entity.auth.AuthDevice;
 import com.example.demo.entity.auth.AuthUser;
 import com.example.demo.exceptions.BusinessException;
 import com.example.demo.repository.AuthUserRepository;
-import com.example.demo.service.auth.AuthDeviceService;
+import com.example.demo.service.AuthDeviceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

@@ -1,11 +1,11 @@
-package com.example.demo.service.impl.auth;
+package com.example.demo.service.impl;
 
 import com.example.demo.constants.DefaultConstants;
 import com.example.demo.constants.HttpStatusConstants;
 import com.example.demo.dto.ResponseDto;
 import com.example.demo.entity.auth.AuthToken;
 import com.example.demo.repository.AuthTokenRepository;
-import com.example.demo.service.auth.AuthTokenService;
+import com.example.demo.service.AuthTokenService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 

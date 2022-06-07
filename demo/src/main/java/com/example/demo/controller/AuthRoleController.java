@@ -4,7 +4,7 @@ package com.example.demo.controller;
 import com.example.demo.constants.UriConstants;
 import com.example.demo.dto.ResponseDto;
 import com.example.demo.dto.RoleDto;
-import com.example.demo.service.auth.AuthRoleService;
+import com.example.demo.service.AuthRoleService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;

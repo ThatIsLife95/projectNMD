@@ -1,4 +1,4 @@
-package com.example.demo.service.impl.auth;
+package com.example.demo.service.impl;
 
 import com.example.demo.constants.HttpStatusConstants;
 import com.example.demo.dto.PermissionDto;
@@ -6,7 +6,7 @@ import com.example.demo.dto.ResponseDto;
 import com.example.demo.entity.auth.AuthPermission;
 import com.example.demo.exceptions.BusinessException;
 import com.example.demo.repository.AuthPermissionRepository;
-import com.example.demo.service.auth.AuthPermissionService;
+import com.example.demo.service.AuthPermissionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;

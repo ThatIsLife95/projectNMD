@@ -1,4 +1,4 @@
-package com.example.demo.service.impl.auth;
+package com.example.demo.service.impl;
 
 
 import com.example.demo.constants.HttpStatusConstants;
@@ -10,7 +10,7 @@ import com.example.demo.entity.auth.AuthRole;
 import com.example.demo.exceptions.BusinessException;
 import com.example.demo.repository.AuthPermissionRepository;
 import com.example.demo.repository.AuthRoleRepository;
-import com.example.demo.service.auth.AuthRoleService;
+import com.example.demo.service.AuthRoleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;

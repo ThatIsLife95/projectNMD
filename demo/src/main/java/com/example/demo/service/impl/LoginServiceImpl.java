@@ -1,11 +1,8 @@
-package com.example.demo.service.impl.auth;
+package com.example.demo.service.impl;
 
-import com.example.demo.constants.HttpStatusConstants;
 import com.example.demo.dto.CustomUserDetails;
 import com.example.demo.entity.auth.AuthUser;
-import com.example.demo.exceptions.BusinessException;
 import com.example.demo.repository.AuthUserRepository;
-import com.example.demo.service.auth.LoginService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;

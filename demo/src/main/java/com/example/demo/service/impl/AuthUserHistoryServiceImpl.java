@@ -1,9 +1,9 @@
-package com.example.demo.service.impl.auth;
+package com.example.demo.service.impl;
 
 import com.example.demo.dto.UserHistoryDto;
 import com.example.demo.entity.auth.AuthUserHistory;
 import com.example.demo.repository.AuthUserHistoryRepository;
-import com.example.demo.service.auth.AuthUserHistoryService;
+import com.example.demo.service.AuthUserHistoryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
