@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 @Entity
 @Getter
@@ -39,6 +38,10 @@ public class AuthUserHistory {
     private String phoneNumber;
 
     @Basic
-    @Column(name = "log_action")
-    private ELogAction logAction;
+    @Column(name = "action_name")
+    private EActionName actionName;
+
+    @Basic
+    @Column(name = "action_status")
+    private boolean actionStatus;
 }

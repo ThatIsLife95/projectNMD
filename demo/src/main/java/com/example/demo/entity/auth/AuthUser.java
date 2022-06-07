@@ -4,11 +4,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -28,12 +27,12 @@ public class AuthUser {
     private int id;
 
     @Basic
-    @Column(name = "user_name",nullable = false, unique = true)
+    @Column(name = "username",nullable = false, unique = true)
     private String username;
 
     @Basic
     @Column(name = "display_name")
-    private String fullName;
+    private String displayName;
 
     @Basic
     @Column(name = "email", nullable = false, unique = true)
@@ -44,16 +43,8 @@ public class AuthUser {
     private String password;
 
     @Basic
-    @Column(name = "phone_number")
-    private String phoneNumber;
-
-    @Basic
-    @Column(name = "identity_card")
-    private String identityCard;
-
-    @Basic
     @Column(name = "status")
-    private EStatus status;
+    private boolean status;
 
     @Basic
     @Column(name = "login_fail_count")
@@ -61,11 +52,11 @@ public class AuthUser {
 
     @Basic
     @Column(name = "last_login")
-    private Timestamp lastLogin;
+    private LocalDateTime lastLogin;
 
     @Basic
     @Column(name = "password_expired_date")
-    private Timestamp expireDate;
+    private LocalDateTime expireDate;
 
     @ManyToMany
     @JoinTable(
@@ -78,6 +69,15 @@ public class AuthUser {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<AuthDevice> devices = new HashSet<>();
+
+    public AuthUser(String username, String displayName, String email, String password, boolean status, LocalDateTime expireDate) {
+        this.username = username;
+        this.displayName = displayName;
+        this.email = email;
+        this.password = password;
+        this.status = status;
+        this.expireDate = expireDate;
+    }
 
     public void addDevice(AuthDevice device) {
         devices.add(device);

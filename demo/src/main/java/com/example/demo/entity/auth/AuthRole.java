@@ -38,6 +38,8 @@ public class AuthRole {
                     name = "permission_id", referencedColumnName = "id"))
     private Set<AuthPermission> permissions = new HashSet<>();
 
+
+
     public void addAuthPermission(AuthPermission permission) {
         permissions.add(permission);
         permission.getRoles().add(this);

@@ -6,7 +6,6 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 @Entity
 @Getter
@@ -29,10 +28,15 @@ public class AuthDevice {
 
     @Basic
     @Column(name = "status")
-    private EStatus status;
+    private boolean status;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private AuthUser user;
 
+    public AuthDevice(String deviceLocation, String deviceDetails, boolean status) {
+        this.deviceLocation = deviceLocation;
+        this.deviceDetails = deviceDetails;
+        this.status = status;
+    }
 }

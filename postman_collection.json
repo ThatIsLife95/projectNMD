@@ -1,0 +1,72 @@
+{
+	"info": {
+		"_postman_id": "a198a133-7a0a-441f-964a-eed27220c8b3",
+		"name": "NMD",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19649612"
+	},
+	"item": [
+		{
+			"name": "Click \"Gửi\"",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "nmd2312@gmail.com",
+					"options": {
+						"raw": {
+							"language": "text"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/auth/send-registration-email",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"send-registration-email"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Click \"Đăng ký tài khoản với email\"",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"ThatIsLife\",\r\n    \"displayName\": \"Nguyễn Minh Dũng\",\r\n    \"email\": \"nmd2312@gmail.com\",\r\n    \"password\": \"Dung123@\",\r\n    \"token\": \"509dba38-cf26-43be-8a26-8f80ef907fc1\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/auth/register-user",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"register-user"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -1,6 +1,7 @@
 package com.example.demo.entity.auth;
 
-public enum ELogAction {
+public enum EActionName {
+    REGISTER,
     LOGIN,
     RESET_PASSWORD,
     CHANGE_PASSWORD,
