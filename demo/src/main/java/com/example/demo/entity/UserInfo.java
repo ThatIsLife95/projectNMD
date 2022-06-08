@@ -5,15 +5,14 @@ import com.example.demo.enums.EGender;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @Setter
 @Table(name = "user_info")
-@ToString
 @NoArgsConstructor
 public class UserInfo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,7 +38,7 @@ public class UserInfo {
 
     @Basic
     @Column(name = "date_of_birth")
-    private String dateOfBirth;
+    private LocalDateTime dateOfBirth;
 
     @Basic
     @Column(name = "gender")
@@ -60,4 +59,8 @@ public class UserInfo {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "auth_user_id", referencedColumnName = "id")
     private AuthUser authUser;
+
+    public UserInfo(String displayName) {
+        this.displayName = displayName;
+    }
 }

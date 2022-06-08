@@ -3,6 +3,7 @@ package com.example.demo.service.impl;
 import com.example.demo.constants.DefaultConstants;
 import com.example.demo.constants.HttpStatusConstants;
 import com.example.demo.dto.RegistrationDto;
+import com.example.demo.entity.UserInfo;
 import com.example.demo.entity.auth.AuthDevice;
 import com.example.demo.entity.auth.AuthRole;
 import com.example.demo.entity.auth.AuthUser;
@@ -14,10 +15,12 @@ import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
+@Transactional
 @AllArgsConstructor
 public class RegistrationServiceImpl implements RegistrationService {
 
@@ -54,7 +57,8 @@ public class RegistrationServiceImpl implements RegistrationService {
                     true,
                     LocalDateTime.now().plusMonths(DefaultConstants.EXPIRE_MONTH_PASSWORD)
             );
-            user.getUserInfo().setDisplayName(registrationDto.getDisplayName());
+            UserInfo userInfo = new UserInfo(registrationDto.getDisplayName());
+            user.setUserInfo(userInfo);
             AuthDevice device = new AuthDevice(
                     deviceLocation,
                     deviceDetails,

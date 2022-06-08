@@ -1,14 +1,19 @@
 package com.example.demo.utils;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.demo.constants.JwtConstants;
 import com.example.demo.dto.CustomUserDetails;
 import com.example.demo.dto.FilterDto;
 import com.example.demo.entity.auth.AuthUser;
 import com.example.demo.enums.ESearchOperation;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -29,8 +34,6 @@ public class Common {
         templateModel.put("button", button);
         return  templateModel;
     }
-
-
 
     public static Specification<AuthUser> getSpecifications(List<FilterDto> filters) {
         if (filters.size() == 0) {

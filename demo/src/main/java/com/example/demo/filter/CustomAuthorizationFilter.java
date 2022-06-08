@@ -7,6 +7,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.demo.constants.JwtConstants;
 import com.example.demo.constants.UriConstants;
+import com.example.demo.utils.Common;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -31,19 +32,19 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         } else {
             String authorizationHeader = request.getHeader(JwtConstants.AUTHORIZATION);
             if (authorizationHeader != null && authorizationHeader.startsWith(JwtConstants.PREFIX_TOKEN)) {
-                    String token = authorizationHeader.substring(JwtConstants.PREFIX_TOKEN.length());
-                    Algorithm algorithm = Algorithm.HMAC256(JwtConstants.SECRET.getBytes());
-                    JWTVerifier verifier = JWT.require(algorithm).build();
-                    DecodedJWT decodedJWT = verifier.verify(token);
-                    String username = decodedJWT.getSubject();
-                    String[] roles = decodedJWT.getClaim(JwtConstants.ROLES).asArray(String.class);
-                    Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-                    Arrays.stream(roles).forEach(role -> {
-                        authorities.add(new SimpleGrantedAuthority(role));
-                    });
-                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, null, authorities);
-                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                    filterChain.doFilter(request, response);
+                String token = authorizationHeader.substring(JwtConstants.PREFIX_TOKEN.length());
+                Algorithm algorithm = Algorithm.HMAC256(JwtConstants.SECRET.getBytes());
+                JWTVerifier verifier = JWT.require(algorithm).build();
+                DecodedJWT decodedJWT = verifier.verify(token);
+                String username = decodedJWT.getSubject();
+                String[] roles = decodedJWT.getClaim(JwtConstants.ROLES).asArray(String.class);
+                Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+                Arrays.stream(roles).forEach(role -> {
+                    authorities.add(new SimpleGrantedAuthority(role));
+                });
+                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, null, authorities);
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                filterChain.doFilter(request, response);
             } else {
                 filterChain.doFilter(request, response);
             }

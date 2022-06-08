@@ -13,7 +13,6 @@ import java.util.Set;
 @Getter
 @Setter
 @Table(name = "auth_role")
-@ToString
 @NoArgsConstructor
 public class AuthRole {
 

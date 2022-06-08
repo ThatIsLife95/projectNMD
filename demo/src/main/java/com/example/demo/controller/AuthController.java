@@ -85,6 +85,8 @@ public class AuthController {
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, loginDto.getPassword());
             Authentication authentication = authenticationManager.authenticate(authenticationToken);
             CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
+            deviceLocation = "192.168.1.1";
+            deviceDetails = "IP 7";
             if (user.isNewDevice(deviceLocation, deviceDetails)) {
                 // Thêm thiết bị mới
                 deviceService.addNewDevice(username, deviceLocation, deviceDetails);
@@ -169,9 +171,13 @@ public class AuthController {
     }
 
     @PostMapping(path = "/reset-password")
-    public ResponseDto<?> resetPassword(@Valid @RequestBody RegistrationDto registrationDto) {
-        registrationService.resetPassword(registrationDto.getEmail(), registrationDto.getPassword());
-        return ResponseDto.ok(null);
+    public ResponseDto<?> resetPassword(@Valid @RequestBody ResetPasswordDto resetPasswordDto) {
+        ResponseDto<?> responseDto = tokenService.verifyToken(resetPasswordDto.getEmail(), resetPasswordDto.getToken());
+        if (HttpStatusConstants.SUCCESS_CODE.equals(responseDto.getCode())) {
+            registrationService.resetPassword(resetPasswordDto.getEmail(), resetPasswordDto.getPassword());
+            responseDto = ResponseDto.ok(null);
+        }
+        return responseDto;
     }
 
 

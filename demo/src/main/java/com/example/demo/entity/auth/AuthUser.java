@@ -4,7 +4,6 @@ import com.example.demo.entity.UserInfo;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.*;
@@ -19,7 +18,6 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @Table(name = "auth_user")
-@ToString
 @NoArgsConstructor
 public class AuthUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -71,7 +69,7 @@ public class AuthUser {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<AuthDevice> devices = new HashSet<>();
 
-    @OneToOne(mappedBy = "authUser")
+    @OneToOne(mappedBy = "authUser", cascade = CascadeType.ALL)
     private UserInfo userInfo;
 
     public AuthUser(String username, String email, String password, boolean status, LocalDateTime expireDate) {
@@ -80,6 +78,11 @@ public class AuthUser {
         this.password = password;
         this.status = status;
         this.expireDate = expireDate;
+    }
+
+    public void setUserInfo(UserInfo userInfo) {
+        this.userInfo = userInfo;
+        userInfo.setAuthUser(this);
     }
 
     public void addDevice(AuthDevice device) {

@@ -59,10 +59,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseDto<?> updateUserInfo(Integer id, UserInfoDto userInfoDto) {
-        UserInfo userInfo = userInfoRepository.findById(id).orElseThrow(
+        UserInfo userInfo = userInfoRepository.findByAuthUser_Id(id).orElseThrow(
                 () -> new BusinessException(HttpStatusConstants.USERNAME_NOT_EXISTED_CODE, HttpStatusConstants.USERNAME_NOT_EXISTED_MESSAGE)
         );
+        int id1 = userInfo.getId();
         modelMapper.map(userInfoDto, userInfo);
+        userInfo.setId(id1);
         UserInfo userInfoResponse = userInfoRepository.save(userInfo);
         return ResponseDto.ok(modelMapper.map(userInfoResponse, UserInfoDto.class));
     }

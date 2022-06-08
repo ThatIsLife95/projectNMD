@@ -11,7 +11,6 @@ import javax.persistence.*;
 @Getter
 @Setter
 @Table(name = "auth_device")
-@ToString
 @NoArgsConstructor
 public class AuthDevice {
     @GeneratedValue(strategy = GenerationType.IDENTITY)

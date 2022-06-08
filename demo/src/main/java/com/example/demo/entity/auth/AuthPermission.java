@@ -12,7 +12,6 @@ import java.util.*;
 @Getter
 @Setter
 @Table(name = "auth_permission")
-@ToString
 @NoArgsConstructor
 public class AuthPermission {
     @GeneratedValue(strategy = GenerationType.IDENTITY)

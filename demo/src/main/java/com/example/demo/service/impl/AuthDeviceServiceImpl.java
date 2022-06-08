@@ -25,10 +25,8 @@ public class AuthDeviceServiceImpl implements AuthDeviceService {
 
     @Override
     public void addNewDevice(String username, String deviceLocation, String deviceDetails) {
-        AuthDevice device = new AuthDevice(
-                deviceLocation,
-                deviceDetails,
-                false
+        AuthDevice device = deviceRepository.findByUser_UsernameAndDeviceLocationAndDeviceDetails(username, deviceLocation, deviceDetails).orElse(
+                new AuthDevice(deviceLocation, deviceDetails, false)
         );
         AuthUser authUser = userRepository.findByUsername(username).orElseThrow(
                 () -> new BusinessException(HttpStatusConstants.USERNAME_NOT_EXISTED_CODE, HttpStatusConstants.USERNAME_NOT_EXISTED_MESSAGE));
