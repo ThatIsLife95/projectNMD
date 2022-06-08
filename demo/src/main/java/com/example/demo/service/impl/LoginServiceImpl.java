@@ -1,8 +1,11 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.constants.HttpStatusConstants;
 import com.example.demo.dto.CustomUserDetails;
 import com.example.demo.entity.auth.AuthUser;
+import com.example.demo.exceptions.BusinessException;
 import com.example.demo.repository.AuthUserRepository;
+import com.example.demo.service.LoginService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
-public class LoginServiceImpl implements UserDetailsService {
+public class LoginServiceImpl implements UserDetailsService, LoginService {
 
     private final AuthUserRepository authUserRepository;
 
@@ -23,6 +26,7 @@ public class LoginServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         AuthUser authUser = authUserRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username not found"));
         return new CustomUserDetails(
+                authUser.getId(),
                 authUser.getUsername(),
                 authUser.getEmail(),
                 authUser.getPassword(),
@@ -34,15 +38,15 @@ public class LoginServiceImpl implements UserDetailsService {
     }
 
 
-//    @Override
-//    public void loginFail(String username) {
-//        AuthUser authUser = authUserRepository.findByUsername(username).orElseThrow(
-//                () -> new BusinessException(HttpStatusConstants.USERNAME_EXIST_CODE, HttpStatusConstants.USERNAME_EXIST_MESSAGE));
-//        int count = authUser.getLoginFailCount();
-//        if (++count == 5) {
-//            authUser.setStatus(false);
-//        }
-//        authUser.setLoginFailCount(count);
-//        authUserRepository.save(authUser);
-//    }
+    @Override
+    public void loginFail(String username) {
+        AuthUser authUser = authUserRepository.findByUsername(username).orElseThrow(
+                () -> new BusinessException(HttpStatusConstants.USERNAME_NOT_EXISTED_CODE, HttpStatusConstants.USERNAME_NOT_EXISTED_MESSAGE));
+        int count = authUser.getLoginFailCount();
+        if (++count == 5) {
+            authUser.setStatus(false);
+        }
+        authUser.setLoginFailCount(count);
+        authUserRepository.save(authUser);
+    }
 }

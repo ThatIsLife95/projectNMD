@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -27,8 +28,9 @@ public class RegistrationServiceImpl implements RegistrationService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
-    public boolean isExistedEmail(String email) {
-        return userRepository.findByEmail(email).isPresent();
+    public String isExistedEmail(String email) {
+        Optional<AuthUser> user = userRepository.findByEmail(email);
+        return user.map(AuthUser::getUsername).orElse(null);
     }
 
     @Override
@@ -40,19 +42,19 @@ public class RegistrationServiceImpl implements RegistrationService {
     public void registerUser(RegistrationDto registrationDto, String deviceLocation, String deviceDetails) {
         String email = registrationDto.getEmail();
         String username = registrationDto.getUsername();
-        if (isExistedEmail(email)) {
-            throw new BusinessException(HttpStatusConstants.EMAIL_EXIST_CODE, HttpStatusConstants.EMAIL_EXIST_MESSAGE);
+        if (isExistedEmail(email) != null) {
+            throw new BusinessException(HttpStatusConstants.EMAIL_EXISTED_CODE, HttpStatusConstants.EMAIL_EXISTED_MESSAGE);
         } else if (isExistedUsername(username)) {
-            throw new BusinessException(HttpStatusConstants.USERNAME_EXIST_CODE, HttpStatusConstants.USERNAME_EXIST_MESSAGE);
+            throw new BusinessException(HttpStatusConstants.USERNAME_EXISTED_CODE, HttpStatusConstants.USERNAME_EXISTED_MESSAGE);
         } else {
             AuthUser user = new AuthUser(
                     registrationDto.getUsername(),
-                    registrationDto.getDisplayName(),
                     registrationDto.getEmail(),
                     bCryptPasswordEncoder.encode(registrationDto.getPassword()),
                     true,
                     LocalDateTime.now().plusMonths(DefaultConstants.EXPIRE_MONTH_PASSWORD)
             );
+            user.getUserInfo().setDisplayName(registrationDto.getDisplayName());
             AuthDevice device = new AuthDevice(
                     deviceLocation,
                     deviceDetails,
@@ -65,5 +67,14 @@ public class RegistrationServiceImpl implements RegistrationService {
             user.addRole(authRole);
             userRepository.save(user);
         }
+    }
+
+    @Override
+    public void resetPassword(String email, String password) {
+        AuthUser user = userRepository.findByEmail(email).orElseThrow(
+                () -> new BusinessException(HttpStatusConstants.EMAIL_NOT_EXISTED_CODE, HttpStatusConstants.EMAIL_NOT_EXISTED_MESSAGE)
+        );
+        user.setPassword(bCryptPasswordEncoder.encode(password));
+        userRepository.save(user);
     }
 }

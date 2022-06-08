@@ -14,6 +14,7 @@ import java.util.Set;
 
 @Data
 public class CustomUserDetails implements UserDetails {
+    private int id;
     private String username;
     private String email;
     private String password;
@@ -22,7 +23,8 @@ public class CustomUserDetails implements UserDetails {
     private LocalDateTime expireDate;
     private Set<AuthDevice> deviceInfos = new HashSet<>();
 
-    public CustomUserDetails(String username,String email, String password, List<SimpleGrantedAuthority> authorities, boolean status, LocalDateTime expireDate, Set<AuthDevice> deviceInfos) {
+    public CustomUserDetails(int id, String username,String email, String password, List<SimpleGrantedAuthority> authorities, boolean status, LocalDateTime expireDate, Set<AuthDevice> deviceInfos) {
+        this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;

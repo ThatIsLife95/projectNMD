@@ -6,6 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.demo.constants.JwtConstants;
+import com.example.demo.constants.UriConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -25,7 +26,7 @@ import java.util.Collection;
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException, JWTVerificationException {
-        if (request.getServletPath().equals("/api/v1/auth/login")) {
+        if (request.getServletPath().equals(UriConstants.AUTH_LOGIN_URI)) {
             filterChain.doFilter(request, response);
         } else {
             String authorizationHeader = request.getHeader(JwtConstants.AUTHORIZATION);
@@ -35,7 +36,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
                     JWTVerifier verifier = JWT.require(algorithm).build();
                     DecodedJWT decodedJWT = verifier.verify(token);
                     String username = decodedJWT.getSubject();
-                    String[] roles = decodedJWT.getClaim("roles").asArray(String.class);
+                    String[] roles = decodedJWT.getClaim(JwtConstants.ROLES).asArray(String.class);
                     Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
                     Arrays.stream(roles).forEach(role -> {
                         authorities.add(new SimpleGrantedAuthority(role));

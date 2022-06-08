@@ -3,6 +3,8 @@ package com.example.demo.repository;
 import com.example.demo.entity.auth.AuthDevice;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface AuthDeviceRepository extends JpaRepository<AuthDevice, Integer> {
+import java.util.Optional;
 
+public interface AuthDeviceRepository extends JpaRepository<AuthDevice, Integer> {
+    Optional<AuthDevice> findByDeviceLocationAndDeviceDetailsAndUser_Email(String deviceLocation, String deviceDetails, String email);
 }

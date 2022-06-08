@@ -1,6 +1,6 @@
 package com.example.demo.dto;
 
-import com.example.demo.entity.auth.EActionName;
+import com.example.demo.enums.EActionName;
 import lombok.Data;
 
 @Data

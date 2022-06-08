@@ -1,5 +1,6 @@
 package com.example.demo.entity.auth;
 
+import com.example.demo.enums.EActionName;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

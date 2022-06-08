@@ -5,9 +5,11 @@ import com.example.demo.dto.ResponseDto;
 
 public interface RegistrationService {
 
-    public boolean isExistedEmail(String email);
+    public String isExistedEmail(String email);
 
     public boolean isExistedUsername(String username);
 
     public void registerUser(RegistrationDto registrationDto, String deviceLocation, String deviceDetails);
+
+    public void resetPassword(String email, String password);
 }

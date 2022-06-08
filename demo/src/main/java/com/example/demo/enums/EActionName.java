@@ -1,4 +1,4 @@
-package com.example.demo.entity.auth;
+package com.example.demo.enums;
 
 public enum EActionName {
     REGISTER,

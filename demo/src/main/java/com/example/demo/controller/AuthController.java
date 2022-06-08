@@ -1,27 +1,20 @@
 package com.example.demo.controller;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.example.demo.constants.*;
+import com.example.demo.constants.HttpStatusConstants;
+import com.example.demo.constants.JwtConstants;
+import com.example.demo.constants.MailTemplateConstants;
+import com.example.demo.constants.UriConstants;
 import com.example.demo.dto.*;
-import com.example.demo.entity.auth.EActionName;
-import com.example.demo.service.EmailService;
-import com.example.demo.service.RegistrationService;
-import com.example.demo.service.AuthDeviceService;
-import com.example.demo.service.AuthTokenService;
-import com.example.demo.service.AuthUserHistoryService;
+import com.example.demo.enums.EActionName;
+import com.example.demo.service.*;
 import com.example.demo.utils.Common;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
@@ -29,8 +22,9 @@ import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping(path = UriConstants.AUTH_URI)
@@ -50,24 +44,22 @@ public class AuthController {
 
     private final AuthUserHistoryService authUserHistoryService;
 
-//    private final LoginService loginService;
-
-
+    private final LoginService loginService;
 
     @PostMapping(path = "/send-registration-email")
     public ResponseDto<?> sendRegistrationEmail(@Valid @NotNull @Email @RequestBody String email) throws MessagingException, IOException {
-        if (registrationService.isExistedEmail(email)) {
-            return ResponseDto.error(HttpStatusConstants.EMAIL_EXIST_CODE, HttpStatusConstants.EMAIL_EXIST_MESSAGE);
+        if (registrationService.isExistedEmail(email) != null) {
+            return ResponseDto.error(HttpStatusConstants.EMAIL_EXISTED_CODE, HttpStatusConstants.EMAIL_EXISTED_MESSAGE);
         }
         String token = Common.getToken();
+        String link = MailTemplateConstants.REGISTRATION_MAIL_LINK + "?email=" + email + "&token=" + token;
         Map<String, Object> templateModel = Common.getTemplateModel(
-                MailTemplateConstants.REGISTRATION_MAIL_LINK,
-                token,
+                link,
                 MailTemplateConstants.REGISTRATION_MAIL_GREETING,
                 MailTemplateConstants.REGISTRATION_MAIL_TEXT,
                 MailTemplateConstants.REGISTRATION_MAIL_BUTTON
-                );
-        emailService.sendMessage(email, DefaultConstants.REGISTRATION_MAIL_SUBJECT, templateModel);
+        );
+        emailService.sendMessage(email, MailTemplateConstants.REGISTRATION_MAIL_SUBJECT, templateModel);
         tokenService.saveToken(email, token);
         return ResponseDto.ok(null);
     }
@@ -97,31 +89,28 @@ public class AuthController {
                 // Thêm thiết bị mới
                 deviceService.addNewDevice(username, deviceLocation, deviceDetails);
                 String token = Common.getToken();
+                String email = user.getEmail();
+                String link = MailTemplateConstants.VERIFY_NEW_DEVICE_MAIL_LINK + "?email=" + email + "&deviceLocation=" + deviceLocation + "&deviceDetails=" + deviceDetails + "&token=" + token;
                 Map<String, Object> templateModel = Common.getTemplateModel(
-                        MailTemplateConstants.VERIFY_NEW_DEVICE_MAIL_LINK,
-                        token,
-                        MailTemplateConstants.VERIFY_NEW_DEVICE_MAIL_GREETING,
+                        link,
+                        MailTemplateConstants.VERIFY_NEW_DEVICE_MAIL_GREETING + username,
                         MailTemplateConstants.VERIFY_NEW_DEVICE_MAIL_TEXT,
                         MailTemplateConstants.VERIFY_NEW_DEVICE_MAIL_BUTTON
                 );
-                String email = user.getEmail();
-                emailService.sendMessage(email, DefaultConstants.VERIFY_NEW_DEVICE_MAIL_SUBJECT, templateModel);
+                emailService.sendMessage(email, MailTemplateConstants.VERIFY_NEW_DEVICE_MAIL_SUBJECT, templateModel);
                 tokenService.saveToken(email, token);
                 return ResponseDto.buildAll(HttpStatusConstants.VERIFY_NEW_DEVICE_CODE,
                         HttpStatusConstants.VERIFY_NEW_DEVICE_MESSAGE,
                         null);
             }
-            Algorithm algorithm = Algorithm.HMAC256(JwtConstants.SECRET.getBytes());
-            String accessToken = JWT.create()
-                    .withSubject(user.getUsername())
-                    // hạn 12h
-                    .withExpiresAt(new Date(System.currentTimeMillis() + JwtConstants.EXPIRATION_TIME))
-                    .withIssuer(request.getRequestURL().toString())
-                    .withClaim("roles", user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
-                    .sign(algorithm);
+            String accessToken = Common.getJWT(user, request, JwtConstants.ACCESS_TOKEN_EXPIRATION_TIME);
+            String refreshToken = Common.getJWT(user, request, JwtConstants.REFRESH_TOKEN_EXPIRATION_TIME);
+            Map<String, String> tokens = new HashMap<>();
+            tokens.put("access_token", accessToken);
+            tokens.put("refresh_token", refreshToken);
             // đăng nhập thành công đổi trạng thái action
             actionStatus = true;
-            return ResponseDto.ok(accessToken);
+            return ResponseDto.ok(tokens);
         } catch (LockedException e) {
             log.error("LockedException => rootCause: {}", Arrays.stream(e.getStackTrace()).findFirst());
             log.error("LockedException => localizedMessage: {}", e.getMessage());
@@ -129,7 +118,7 @@ public class AuthController {
         } catch (UsernameNotFoundException | AuthenticationCredentialsNotFoundException e) {
             log.error("Exception => rootCause: {}", Arrays.stream(e.getStackTrace()).findFirst());
             log.error("Exception => localizedMessage: {}", e.getMessage());
-//            loginService.loginFail(username);
+            loginService.loginFail(username);
             return ResponseDto.error(HttpStatusConstants.INVALID_EMAIL_OR_PASSWORD_CODE, HttpStatusConstants.INVALID_EMAIL_OR_PASSWORD_MESSAGE);
         } catch (AccountExpiredException e) {
             log.error("AccountExpiredException => rootCause: {}", Arrays.stream(e.getStackTrace()).findFirst());
@@ -146,6 +135,44 @@ public class AuthController {
             userHistoryDto.setActionStatus(actionStatus);
             authUserHistoryService.log(userHistoryDto);
         }
-
     }
+
+    @GetMapping(path = "/activate-new-device")
+    public ResponseDto<?> activateNewDevice(@RequestParam String email,
+                                            @RequestParam String deviceLocation,
+                                            @RequestParam String deviceDetails,
+                                            @RequestParam String token) {
+        ResponseDto<?> responseDto = tokenService.verifyToken(email, token);
+        if (HttpStatusConstants.SUCCESS_CODE.equals(responseDto.getCode())) {
+            deviceService.activateNewDevice(deviceLocation, deviceDetails, email);
+        }
+        return responseDto;
+    }
+
+    @PostMapping(path = "/forgot-password")
+    public ResponseDto<?> forgotPassword(@Valid @NotNull @Email @RequestBody String email) throws MessagingException, IOException {
+        String username = registrationService.isExistedEmail(email);
+        if (username == null) {
+            return ResponseDto.error(HttpStatusConstants.EMAIL_NOT_EXISTED_CODE, HttpStatusConstants.EMAIL_NOT_EXISTED_MESSAGE);
+        }
+        String token = Common.getToken();
+        String link = MailTemplateConstants.FORGOT_PASSWORD_MAIL_LINK + "?email=" + email + "&token=" + token;
+        Map<String, Object> templateModel = Common.getTemplateModel(
+                link,
+                MailTemplateConstants.FORGOT_PASSWORD_MAIL_GREETING + username,
+                MailTemplateConstants.FORGOT_PASSWORD_MAIL_TEXT,
+                MailTemplateConstants.FORGOT_PASSWORD_MAIL_BUTTON
+        );
+        emailService.sendMessage(email, MailTemplateConstants.FORGOT_PASSWORD_MAIL_SUBJECT, templateModel);
+        tokenService.saveToken(email, token);
+        return ResponseDto.ok(null);
+    }
+
+    @PostMapping(path = "/reset-password")
+    public ResponseDto<?> resetPassword(@Valid @RequestBody RegistrationDto registrationDto) {
+        registrationService.resetPassword(registrationDto.getEmail(), registrationDto.getPassword());
+        return ResponseDto.ok(null);
+    }
+
+
 }

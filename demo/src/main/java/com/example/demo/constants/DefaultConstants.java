@@ -3,8 +3,8 @@ package com.example.demo.constants;
 public class DefaultConstants {
     public static final String MAIL_TEMPLATE = "mail-template";
     public static final String ENCODING = "UTF-8";
-    public static final String REGISTRATION_MAIL_SUBJECT = "Xác nhận địa chỉ email cho tài khoản của bạn";
-    public static final String VERIFY_NEW_DEVICE_MAIL_SUBJECT = "Xác nhận đăng nhập thiết bị mới cho tài khoản của bạn";
+
+
 
     public static final long EXPIRE_MINUTE_LINK = 30;
     public static final String MY_EMAIL = "nmnmnm06012022@gmail.com";
@@ -17,4 +17,5 @@ public class DefaultConstants {
 
     public static final String MESSAGE_SOURCE_NAME = "mail";
     public static final long EXPIRE_MONTH_PASSWORD = 4;
+    public static final String DESC_SORT_TYPE = "DESC";
 }

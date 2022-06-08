@@ -1,5 +1,6 @@
 package com.example.demo.entity.auth;
 
+import com.example.demo.entity.UserInfo;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,9 +31,9 @@ public class AuthUser {
     @Column(name = "username",nullable = false, unique = true)
     private String username;
 
-    @Basic
-    @Column(name = "display_name")
-    private String displayName;
+//    @Basic
+//    @Column(name = "display_name")
+//    private String displayName;
 
     @Basic
     @Column(name = "email", unique = true)
@@ -70,9 +71,11 @@ public class AuthUser {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<AuthDevice> devices = new HashSet<>();
 
-    public AuthUser(String username, String displayName, String email, String password, boolean status, LocalDateTime expireDate) {
+    @OneToOne(mappedBy = "authUser")
+    private UserInfo userInfo;
+
+    public AuthUser(String username, String email, String password, boolean status, LocalDateTime expireDate) {
         this.username = username;
-        this.displayName = displayName;
         this.email = email;
         this.password = password;
         this.status = status;
