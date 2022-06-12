@@ -1,5 +1,6 @@
 package com.example.demo.entity.auth;
 
+import com.example.demo.entity.audit.DateAudit;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,7 +13,7 @@ import javax.persistence.*;
 @Setter
 @Table(name = "auth_device")
 @NoArgsConstructor
-public class AuthDevice {
+public class AuthDevice extends DateAudit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id")

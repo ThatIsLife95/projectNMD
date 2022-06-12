@@ -4,8 +4,14 @@ import com.example.demo.constants.HttpStatusConstants;
 import com.example.demo.constants.JwtConstants;
 import com.example.demo.constants.MailTemplateConstants;
 import com.example.demo.constants.UriConstants;
-import com.example.demo.dto.*;
 import com.example.demo.enums.EActionName;
+import com.example.demo.payload.request.EmailRequest;
+import com.example.demo.payload.request.LoginRequest;
+import com.example.demo.payload.request.RegistrationRequest;
+import com.example.demo.payload.request.ResetPasswordRequest;
+import com.example.demo.payload.response.ResponseEntity;
+import com.example.demo.sercurity.CustomUserDetails;
+import com.example.demo.sercurity.JwtTokenProvider;
 import com.example.demo.service.*;
 import com.example.demo.utils.Common;
 import lombok.AllArgsConstructor;
@@ -19,8 +25,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -46,10 +50,13 @@ public class AuthController {
 
     private final LoginService loginService;
 
+    private final JwtTokenProvider jwtTokenProvider;
+
     @PostMapping(path = "/send-registration-email")
-    public ResponseDto<?> sendRegistrationEmail(@Valid @NotNull @Email @RequestBody String email) throws MessagingException, IOException {
+    public ResponseEntity<?> sendRegistrationEmail(@Valid @RequestBody EmailRequest emailRequest) throws MessagingException, IOException {
+        String email = emailRequest.getEmail();
         if (registrationService.isExistedEmail(email) != null) {
-            return ResponseDto.error(HttpStatusConstants.EMAIL_EXISTED_CODE, HttpStatusConstants.EMAIL_EXISTED_MESSAGE);
+            return ResponseEntity.error(HttpStatusConstants.EMAIL_EXISTED_CODE, HttpStatusConstants.EMAIL_EXISTED_MESSAGE);
         }
         String token = Common.getToken();
         String link = MailTemplateConstants.REGISTRATION_MAIL_LINK + "?email=" + email + "&token=" + token;
@@ -61,32 +68,33 @@ public class AuthController {
         );
         emailService.sendMessage(email, MailTemplateConstants.REGISTRATION_MAIL_SUBJECT, templateModel);
         tokenService.saveToken(email, token);
-        return ResponseDto.ok(null);
+        return ResponseEntity.ok(null);
     }
 
     @PostMapping(path = "/register-user")
-    public ResponseDto<?> registerUser(@Valid @RequestBody RegistrationDto registrationDto, HttpServletRequest request) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody RegistrationRequest registrationRequest, HttpServletRequest request) {
         String deviceLocation = request.getRemoteAddr();
         String deviceDetails = request.getHeader(JwtConstants.USER_AGENT);
-        ResponseDto<?> responseDto = tokenService.verifyToken(registrationDto.getEmail(), registrationDto.getToken());
-        if (HttpStatusConstants.SUCCESS_CODE.equals(responseDto.getCode())) {
-            registrationService.registerUser(registrationDto, deviceLocation, deviceDetails);
+        ResponseEntity<?> responseEntity = tokenService.verifyToken(registrationRequest.getEmail(), registrationRequest.getToken());
+        if (HttpStatusConstants.SUCCESS_CODE.equals(responseEntity.getCode())) {
+            registrationService.registerUser(registrationRequest, deviceLocation, deviceDetails);
         }
-        return responseDto;
+        return responseEntity;
     }
 
     @PostMapping(path = "/login")
-    public ResponseDto<?> login(@RequestBody LoginDto loginDto, HttpServletRequest request) throws MessagingException, IOException {
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletRequest request) throws MessagingException, IOException {
         String deviceLocation = request.getRemoteAddr();
         String deviceDetails = request.getHeader(JwtConstants.USER_AGENT);
         boolean actionStatus = false;
-        String username = loginDto.getUsername();
+        String emailOrUsername = loginRequest.getEmailOrUsername();
         try {
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, loginDto.getPassword());
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(emailOrUsername, loginRequest.getPassword());
             Authentication authentication = authenticationManager.authenticate(authenticationToken);
             CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
-            deviceLocation = "192.168.1.1";
-            deviceDetails = "IP 7";
+            String username = user.getUsername();
+//            deviceLocation = "192.168.1.1";
+//            deviceDetails = "IP 7";
             if (user.isNewDevice(deviceLocation, deviceDetails)) {
                 // Thêm thiết bị mới
                 deviceService.addNewDevice(username, deviceLocation, deviceDetails);
@@ -101,61 +109,59 @@ public class AuthController {
                 );
                 emailService.sendMessage(email, MailTemplateConstants.VERIFY_NEW_DEVICE_MAIL_SUBJECT, templateModel);
                 tokenService.saveToken(email, token);
-                return ResponseDto.buildAll(HttpStatusConstants.VERIFY_NEW_DEVICE_CODE,
+                return ResponseEntity.buildAll(HttpStatusConstants.VERIFY_NEW_DEVICE_CODE,
                         HttpStatusConstants.VERIFY_NEW_DEVICE_MESSAGE,
                         null);
             }
-            String accessToken = Common.getJWT(user, request, JwtConstants.ACCESS_TOKEN_EXPIRATION_TIME);
-            String refreshToken = Common.getJWT(user, request, JwtConstants.REFRESH_TOKEN_EXPIRATION_TIME);
+            String accessToken = jwtTokenProvider.generateAccessToken(user, request);
+            String refreshToken = jwtTokenProvider.generateRefreshToken(user, request);
             Map<String, String> tokens = new HashMap<>();
             tokens.put("access_token", accessToken);
             tokens.put("refresh_token", refreshToken);
             // đăng nhập thành công đổi trạng thái action
             actionStatus = true;
-            return ResponseDto.ok(tokens);
+            return ResponseEntity.ok(tokens);
         } catch (LockedException e) {
             log.error("LockedException => rootCause: {}", Arrays.stream(e.getStackTrace()).findFirst());
             log.error("LockedException => localizedMessage: {}", e.getMessage());
-            return ResponseDto.error(HttpStatusConstants.LOCKED_ACCOUNT_CODE, HttpStatusConstants.LOCKED_ACCOUNT_MESSAGE);
+            return ResponseEntity.error(HttpStatusConstants.LOCKED_ACCOUNT_CODE, HttpStatusConstants.LOCKED_ACCOUNT_MESSAGE);
         } catch (UsernameNotFoundException | AuthenticationCredentialsNotFoundException e) {
             log.error("Exception => rootCause: {}", Arrays.stream(e.getStackTrace()).findFirst());
             log.error("Exception => localizedMessage: {}", e.getMessage());
-            loginService.loginFail(username);
-            return ResponseDto.error(HttpStatusConstants.INVALID_EMAIL_OR_PASSWORD_CODE, HttpStatusConstants.INVALID_EMAIL_OR_PASSWORD_MESSAGE);
+            loginService.loginFail(emailOrUsername);
+            return ResponseEntity.error(HttpStatusConstants.INVALID_EMAIL_OR_PASSWORD_CODE, HttpStatusConstants.INVALID_EMAIL_OR_PASSWORD_MESSAGE);
         } catch (AccountExpiredException e) {
             log.error("AccountExpiredException => rootCause: {}", Arrays.stream(e.getStackTrace()).findFirst());
             log.error("AccountExpiredException => localizedMessage: {}", e.getMessage());
-            return ResponseDto.error(HttpStatusConstants.EXPIRED_PASSWORD_CODE, HttpStatusConstants.EXPIRED_PASSWORD_MESSAGE);
+            return ResponseEntity.error(HttpStatusConstants.EXPIRED_PASSWORD_CODE, HttpStatusConstants.EXPIRED_PASSWORD_MESSAGE);
         } catch (AuthenticationException e) {
             log.error("AuthenticationException => rootCause: {}", Arrays.stream(e.getStackTrace()).findFirst());
             log.error("AuthenticationException => localizedMessage: {}", e.getMessage());
-            return ResponseDto.error(HttpStatusConstants.UNAVAILABLE_CODE, HttpStatusConstants.UNAVAILABLE_MESSAGE);
+            return ResponseEntity.error(HttpStatusConstants.UNAVAILABLE_CODE, HttpStatusConstants.UNAVAILABLE_MESSAGE);
         } finally {
-            UserHistoryDto userHistoryDto = new UserHistoryDto();
-            userHistoryDto.setUsername(username);
-            userHistoryDto.setActionName(EActionName.LOGIN);
-            userHistoryDto.setActionStatus(actionStatus);
-            authUserHistoryService.log(userHistoryDto);
+            // ghi log ra database
+            authUserHistoryService.log(emailOrUsername, EActionName.LOGIN, actionStatus);
         }
     }
 
     @GetMapping(path = "/activate-new-device")
-    public ResponseDto<?> activateNewDevice(@RequestParam String email,
-                                            @RequestParam String deviceLocation,
-                                            @RequestParam String deviceDetails,
-                                            @RequestParam String token) {
-        ResponseDto<?> responseDto = tokenService.verifyToken(email, token);
-        if (HttpStatusConstants.SUCCESS_CODE.equals(responseDto.getCode())) {
+    public ResponseEntity<?> activateNewDevice(@RequestParam String email,
+                                               @RequestParam String deviceLocation,
+                                               @RequestParam String deviceDetails,
+                                               @RequestParam String token) {
+        ResponseEntity<?> responseEntity = tokenService.verifyToken(email, token);
+        if (HttpStatusConstants.SUCCESS_CODE.equals(responseEntity.getCode())) {
             deviceService.activateNewDevice(deviceLocation, deviceDetails, email);
         }
-        return responseDto;
+        return responseEntity;
     }
 
     @PostMapping(path = "/forgot-password")
-    public ResponseDto<?> forgotPassword(@Valid @NotNull @Email @RequestBody String email) throws MessagingException, IOException {
+    public ResponseEntity<?> forgotPassword(@Valid @RequestBody EmailRequest emailRequest) throws MessagingException, IOException {
+        String email = emailRequest.getEmail();
         String username = registrationService.isExistedEmail(email);
         if (username == null) {
-            return ResponseDto.error(HttpStatusConstants.EMAIL_NOT_EXISTED_CODE, HttpStatusConstants.EMAIL_NOT_EXISTED_MESSAGE);
+            return ResponseEntity.error(HttpStatusConstants.EMAIL_NOT_EXISTED_CODE, HttpStatusConstants.EMAIL_NOT_EXISTED_MESSAGE);
         }
         String token = Common.getToken();
         String link = MailTemplateConstants.FORGOT_PASSWORD_MAIL_LINK + "?email=" + email + "&token=" + token;
@@ -167,17 +173,17 @@ public class AuthController {
         );
         emailService.sendMessage(email, MailTemplateConstants.FORGOT_PASSWORD_MAIL_SUBJECT, templateModel);
         tokenService.saveToken(email, token);
-        return ResponseDto.ok(null);
+        return ResponseEntity.ok(null);
     }
 
     @PostMapping(path = "/reset-password")
-    public ResponseDto<?> resetPassword(@Valid @RequestBody ResetPasswordDto resetPasswordDto) {
-        ResponseDto<?> responseDto = tokenService.verifyToken(resetPasswordDto.getEmail(), resetPasswordDto.getToken());
-        if (HttpStatusConstants.SUCCESS_CODE.equals(responseDto.getCode())) {
-            registrationService.resetPassword(resetPasswordDto.getEmail(), resetPasswordDto.getPassword());
-            responseDto = ResponseDto.ok(null);
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest) {
+        ResponseEntity<?> responseEntity = tokenService.verifyToken(resetPasswordRequest.getEmail(), resetPasswordRequest.getToken());
+        if (HttpStatusConstants.SUCCESS_CODE.equals(responseEntity.getCode())) {
+            registrationService.resetPassword(resetPasswordRequest.getEmail(), resetPasswordRequest.getPassword());
+            responseEntity = ResponseEntity.ok(null);
         }
-        return responseDto;
+        return responseEntity;
     }
 
 

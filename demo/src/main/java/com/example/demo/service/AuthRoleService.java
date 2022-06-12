@@ -1,17 +1,17 @@
 package com.example.demo.service;
 
 
-import com.example.demo.dto.ResponseDto;
-import com.example.demo.dto.RoleDto;
+import com.example.demo.payload.response.ResponseEntity;
+import com.example.demo.payload.RoleDto;
 
 public interface AuthRoleService {
-    public ResponseDto<?> getRoles();
+    public ResponseEntity<?> getRoles();
 
-    public ResponseDto<?> getRole(Integer id);
+    public ResponseEntity<?> getRole(Integer id);
 
-    public ResponseDto<?> createRole(RoleDto roleDto);
+    public ResponseEntity<?> createRole(RoleDto roleDto);
 
-    public ResponseDto<?> updateRole(Integer id, RoleDto roleDto);
+    public ResponseEntity<?> updateRole(Integer id, RoleDto roleDto);
 
-    public ResponseDto<?> deleteRole(Integer id);
+    public ResponseEntity<?> deleteRole(Integer id);
 }

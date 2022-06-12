@@ -1,17 +1,17 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.PageRequestDto;
-import com.example.demo.dto.PasswordDto;
-import com.example.demo.dto.ResponseDto;
-import com.example.demo.dto.UserInfoDto;
+import com.example.demo.payload.request.PageRequest;
+import com.example.demo.payload.request.ChangePasswordRequest;
+import com.example.demo.payload.response.ResponseEntity;
+import com.example.demo.payload.UserInfoDto;
 
 public interface UserService {
-    public ResponseDto<?> getUsers(PageRequestDto pageRequestDto);
+    public ResponseEntity<?> getUsers(PageRequest pageRequest);
 
-    public ResponseDto<?> getUser(Integer id);
+    public ResponseEntity<?> getUser(Integer id);
 
-    public ResponseDto<?> updateUserInfo(Integer id, UserInfoDto userInfoDto);
+    public ResponseEntity<?> updateUserInfo(Integer id, UserInfoDto userInfoDto);
 
-    public ResponseDto<?> changePassword(Integer id, PasswordDto passwordDto);
+    public ResponseEntity<?> changePassword(Integer id, ChangePasswordRequest changePasswordRequest);
 
 }

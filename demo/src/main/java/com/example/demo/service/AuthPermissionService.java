@@ -1,17 +1,17 @@
 package com.example.demo.service;
 
 
-import com.example.demo.dto.PermissionDto;
-import com.example.demo.dto.ResponseDto;
+import com.example.demo.payload.PermissionDto;
+import com.example.demo.payload.response.ResponseEntity;
 
 public interface AuthPermissionService {
-    public ResponseDto<?> getPermissions();
+    public ResponseEntity<?> getPermissions();
 
-    public ResponseDto<?> getPermission(Integer id);
+    public ResponseEntity<?> getPermission(Integer id);
 
-    public ResponseDto<?> createPermission(PermissionDto permissionDto);
+    public ResponseEntity<?> createPermission(PermissionDto permissionDto);
 
-    public ResponseDto<?> updatePermission(Integer id, PermissionDto permissionDto);
+    public ResponseEntity<?> updatePermission(Integer id, PermissionDto permissionDto);
 
-    public ResponseDto<?> deletePermission(Integer id);
+    public ResponseEntity<?> deletePermission(Integer id);
 }

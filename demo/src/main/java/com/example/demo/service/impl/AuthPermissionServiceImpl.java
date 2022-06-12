@@ -1,8 +1,8 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.constants.HttpStatusConstants;
-import com.example.demo.dto.PermissionDto;
-import com.example.demo.dto.ResponseDto;
+import com.example.demo.payload.PermissionDto;
+import com.example.demo.payload.response.ResponseEntity;
 import com.example.demo.entity.auth.AuthPermission;
 import com.example.demo.exceptions.BusinessException;
 import com.example.demo.repository.AuthPermissionRepository;
@@ -27,49 +27,49 @@ public class AuthPermissionServiceImpl implements AuthPermissionService {
     private final ModelMapper modelMapper;
 
     @Override
-    public ResponseDto<?> getPermissions() {
+    public ResponseEntity<?> getPermissions() {
         List<AuthPermission> permissions = permissionRepository.findAll();
-        return ResponseDto.ok(
+        return ResponseEntity.ok(
                 permissions.stream().map(authPermission -> modelMapper.map(authPermission, PermissionDto.class)).collect(Collectors.toList())
         );
     }
 
     @Override
-    public ResponseDto<?> getPermission(Integer id) {
+    public ResponseEntity<?> getPermission(Integer id) {
         AuthPermission authPermission = permissionRepository.findById(id).orElseThrow(
                 () -> new BusinessException(HttpStatusConstants.PERMISSION_NOT_EXISTED_CODE, HttpStatusConstants.PERMISSION_NOT_EXISTED_MESSAGE));
-        return ResponseDto.ok(
+        return ResponseEntity.ok(
                 modelMapper.map(authPermission, PermissionDto.class)
         );
     }
 
     @Override
-    public ResponseDto<?> createPermission(PermissionDto permissionDto) {
-        ResponseDto<?> responseDto = ResponseDto.error(HttpStatusConstants.PERMISSION_EXISTED_CODE, HttpStatusConstants.PERMISSION_EXISTED_MESSAGE);
+    public ResponseEntity<?> createPermission(PermissionDto permissionDto) {
+        ResponseEntity<?> responseEntity = ResponseEntity.error(HttpStatusConstants.PERMISSION_EXISTED_CODE, HttpStatusConstants.PERMISSION_EXISTED_MESSAGE);
         boolean isExistedPermission = permissionRepository.findByName(permissionDto.getName()).isPresent();
         if (!isExistedPermission) {
             AuthPermission authPermission = permissionRepository.save(modelMapper.map(permissionDto, AuthPermission.class));
-            responseDto = ResponseDto.ok(modelMapper.map(authPermission, PermissionDto.class));
+            responseEntity = ResponseEntity.ok(modelMapper.map(authPermission, PermissionDto.class));
         }
-        return responseDto;
+        return responseEntity;
     }
 
     @Override
-    public ResponseDto<?> updatePermission(Integer id, PermissionDto permissionDto) {
+    public ResponseEntity<?> updatePermission(Integer id, PermissionDto permissionDto) {
         AuthPermission authPermission = permissionRepository.findById(id).orElseThrow(
                 () -> new BusinessException(HttpStatusConstants.PERMISSION_NOT_EXISTED_CODE, HttpStatusConstants.PERMISSION_NOT_EXISTED_MESSAGE)
         );
         authPermission.setName(permissionDto.getName());
         AuthPermission authPermissionResponse = permissionRepository.save(authPermission);
-        return ResponseDto.ok(
+        return ResponseEntity.ok(
                 modelMapper.map(authPermissionResponse, PermissionDto.class)
         );
     }
 
     @Override
-    public ResponseDto<?> deletePermission(Integer id) {
+    public ResponseEntity<?> deletePermission(Integer id) {
         permissionRepository.deleteById(id);
-        return ResponseDto.ok(id);
+        return ResponseEntity.ok(id);
     }
 
 

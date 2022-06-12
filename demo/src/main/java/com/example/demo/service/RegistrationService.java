@@ -1,7 +1,6 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.RegistrationDto;
-import com.example.demo.dto.ResponseDto;
+import com.example.demo.payload.request.RegistrationRequest;
 
 public interface RegistrationService {
 
@@ -9,7 +8,7 @@ public interface RegistrationService {
 
     public boolean isExistedUsername(String username);
 
-    public void registerUser(RegistrationDto registrationDto, String deviceLocation, String deviceDetails);
+    public void registerUser(RegistrationRequest registrationRequest, String deviceLocation, String deviceDetails);
 
     public void resetPassword(String email, String password);
 }

@@ -1,0 +1,7 @@
+INSERT IGNORE INTO auth_role(name) VALUES('SUPER_ADMIN');
+INSERT IGNORE INTO auth_role(name) VALUES('USER');
+
+INSERT IGNORE INTO auth_permission(name) VALUES('USER_READ');
+INSERT IGNORE INTO auth_permission(name) VALUES('USER_WRITE');
+INSERT IGNORE INTO auth_permission(name) VALUES('USER_DELETE');
+

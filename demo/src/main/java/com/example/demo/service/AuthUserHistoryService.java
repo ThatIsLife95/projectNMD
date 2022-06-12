@@ -1,8 +1,7 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.UserHistoryDto;
-import com.example.demo.entity.auth.AuthUserHistory;
+import com.example.demo.enums.EActionName;
 
 public interface AuthUserHistoryService {
-    public void log(UserHistoryDto userHistoryDto);
+    void log(String emailOrUsername, EActionName actionName, boolean actionStatus);
 }

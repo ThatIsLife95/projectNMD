@@ -1,4 +1,4 @@
-package com.example.demo.dto;
+package com.example.demo.payload.request;
 
 import lombok.Data;
 
@@ -6,13 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class PageRequestDto {
+public class PageRequest {
 
     private Integer page;
 
     private Integer size;
 
-    private List<FilterDto> filters = new ArrayList<>();
+    private List<FilterRequest> filters = new ArrayList<>();
 
     private String sortColumn;
 

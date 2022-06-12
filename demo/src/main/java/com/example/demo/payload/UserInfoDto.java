@@ -1,4 +1,4 @@
-package com.example.demo.dto;
+package com.example.demo.payload;
 
 import com.example.demo.enums.EGender;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package com.example.demo.dto;
+package com.example.demo.sercurity;
 
 import com.example.demo.entity.auth.AuthDevice;
 import lombok.Data;

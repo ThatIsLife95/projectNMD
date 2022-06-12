@@ -1,5 +1,6 @@
 package com.example.demo.entity.auth;
 
+import com.example.demo.entity.audit.UserDateAudit;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,7 +14,7 @@ import java.util.*;
 @Setter
 @Table(name = "auth_permission")
 @NoArgsConstructor
-public class AuthPermission {
+public class AuthPermission{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id")

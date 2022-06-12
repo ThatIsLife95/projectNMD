@@ -2,7 +2,7 @@ package com.example.demo.service.impl;
 
 import com.example.demo.constants.DefaultConstants;
 import com.example.demo.constants.HttpStatusConstants;
-import com.example.demo.dto.ResponseDto;
+import com.example.demo.payload.response.ResponseEntity;
 import com.example.demo.entity.auth.AuthToken;
 import com.example.demo.repository.AuthTokenRepository;
 import com.example.demo.service.AuthTokenService;
@@ -27,17 +27,17 @@ public class AuthTokenServiceImpl implements AuthTokenService {
     }
 
     @Override
-    public ResponseDto<?> verifyToken(String email, String token) {
-        ResponseDto<?> responseDto = ResponseDto.ok(null);
+    public ResponseEntity<?> verifyToken(String email, String token) {
+        ResponseEntity<?> responseEntity = ResponseEntity.ok(null);
         AuthToken authToken = tokenRepository.findByEmail(email).orElseThrow(IllegalStateException::new);
         if (!token.equals(authToken.getToken())) {
-            responseDto = ResponseDto.error(HttpStatusConstants.INVALID_LINK_CODE, HttpStatusConstants.INVALID_LINK_CODE_MESSAGE);
+            responseEntity = ResponseEntity.error(HttpStatusConstants.INVALID_LINK_CODE, HttpStatusConstants.INVALID_LINK_CODE_MESSAGE);
         } else if (LocalDateTime.now().isAfter(authToken.getExpiredDate())) {
-            responseDto = ResponseDto.error(HttpStatusConstants.EXPIRED_LINK_CODE, HttpStatusConstants.EXPIRED_LINK_CODE_MESSAGE);
+            responseEntity = ResponseEntity.error(HttpStatusConstants.EXPIRED_LINK_CODE, HttpStatusConstants.EXPIRED_LINK_CODE_MESSAGE);
         } else {
             authToken.setConfirmed(true);
             tokenRepository.save(authToken);
         }
-        return responseDto;
+        return responseEntity;
     }
 }

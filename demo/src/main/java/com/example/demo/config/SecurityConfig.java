@@ -37,6 +37,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeHttpRequests().antMatchers("/api/v1/role/**").hasRole("SUPER_ADMIN");
         http.authorizeHttpRequests().antMatchers("/api/v1/permission/**").hasRole("SUPER_ADMIN");
         http.authorizeHttpRequests().anyRequest().authenticated();
+        http.oauth2Login().redirectionEndpoint().baseUri("/oauth2/callback/*");
+//                .and()
+//                .userInfoEndpoint().userService(customOAuth2UserService);
         http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 

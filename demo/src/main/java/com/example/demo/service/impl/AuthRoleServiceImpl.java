@@ -2,9 +2,9 @@ package com.example.demo.service.impl;
 
 
 import com.example.demo.constants.HttpStatusConstants;
-import com.example.demo.dto.PermissionDto;
-import com.example.demo.dto.ResponseDto;
-import com.example.demo.dto.RoleDto;
+import com.example.demo.payload.PermissionDto;
+import com.example.demo.payload.response.ResponseEntity;
+import com.example.demo.payload.RoleDto;
 import com.example.demo.entity.auth.AuthPermission;
 import com.example.demo.entity.auth.AuthRole;
 import com.example.demo.exceptions.BusinessException;
@@ -33,7 +33,7 @@ public class AuthRoleServiceImpl implements AuthRoleService {
     private final ModelMapper modelMapper;
 
     @Override
-    public ResponseDto<?> getRoles() {
+    public ResponseEntity<?> getRoles() {
         List<AuthRole> authRoles = roleRepository.findAll();
         List<RoleDto> roles = authRoles.stream().map(authRole -> {
             RoleDto role = modelMapper.map(authRole, RoleDto.class);
@@ -42,29 +42,29 @@ public class AuthRoleServiceImpl implements AuthRoleService {
             return role;
         }).collect(Collectors.toList());
 
-        return ResponseDto.ok(roles);
+        return ResponseEntity.ok(roles);
     }
 
     @Override
-    public ResponseDto<?> getRole(Integer id) {
+    public ResponseEntity<?> getRole(Integer id) {
         AuthRole authRole = roleRepository.findById(id).orElseThrow(
                 () -> new BusinessException(HttpStatusConstants.ROLE_NOT_EXISTED_CODE, HttpStatusConstants.ROLE_NOT_EXISTED_MESSAGE));
-        return ResponseDto.ok(modelMapper.map(authRole, RoleDto.class));
+        return ResponseEntity.ok(modelMapper.map(authRole, RoleDto.class));
     }
 
     @Override
-    public ResponseDto<?> createRole(RoleDto roleDto) {
-        ResponseDto<?> responseDto = ResponseDto.error(HttpStatusConstants.ROLE_EXISTED_CODE, HttpStatusConstants.ROLE_EXISTED_MESSAGE);
+    public ResponseEntity<?> createRole(RoleDto roleDto) {
+        ResponseEntity<?> responseEntity = ResponseEntity.error(HttpStatusConstants.ROLE_EXISTED_CODE, HttpStatusConstants.ROLE_EXISTED_MESSAGE);
         boolean isExistedRole = roleRepository.findByName(roleDto.getName()).isPresent();
         if (!isExistedRole) {
             AuthRole authRole = roleRepository.save(modelMapper.map(roleDto, AuthRole.class));
-            responseDto = ResponseDto.ok(modelMapper.map(authRole, RoleDto.class));
+            responseEntity = ResponseEntity.ok(modelMapper.map(authRole, RoleDto.class));
         }
-        return responseDto;
+        return responseEntity;
     }
 
     @Override
-    public ResponseDto<?> updateRole(Integer id, RoleDto roleDto) {
+    public ResponseEntity<?> updateRole(Integer id, RoleDto roleDto) {
         AuthRole authRole = roleRepository.findById(id).orElseThrow(
                 () -> new BusinessException(HttpStatusConstants.ROLE_NOT_EXISTED_CODE, HttpStatusConstants.ROLE_NOT_EXISTED_MESSAGE)
         );
@@ -79,12 +79,12 @@ public class AuthRoleServiceImpl implements AuthRoleService {
                 }
         );
         AuthRole authRoleResponse = roleRepository.save(authRole);
-        return ResponseDto.ok(modelMapper.map(authRoleResponse, RoleDto.class));
+        return ResponseEntity.ok(modelMapper.map(authRoleResponse, RoleDto.class));
     }
 
     @Override
-    public ResponseDto<?> deleteRole(Integer id) {
+    public ResponseEntity<?> deleteRole(Integer id) {
         roleRepository.deleteById(id);
-        return ResponseDto.ok(id);
+        return ResponseEntity.ok(id);
     }
 }

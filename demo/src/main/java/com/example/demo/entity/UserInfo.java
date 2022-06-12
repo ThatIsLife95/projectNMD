@@ -9,58 +9,58 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity
-@Getter
-@Setter
-@Table(name = "user_info")
-@NoArgsConstructor
+//@Entity
+//@Getter
+//@Setter
+//@Table(name = "user_info")
+//@NoArgsConstructor
 public class UserInfo {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Id
-    @Column(name = "id")
-    private int id;
-
-    @Basic
-    @Column(name = "display_name")
-    private String displayName;
-
-    @Basic
-    @Column(name = "cover_image")
-    private String coverImage;
-
-    @Basic
-    @Column(name = "avatar_image")
-    private String avatarImage;
-
-    @Basic
-    @Column(name = "description")
-    private String description;
-
-    @Basic
-    @Column(name = "date_of_birth")
-    private LocalDateTime dateOfBirth;
-
-    @Basic
-    @Column(name = "gender")
-    private EGender gender;
-
-    @Basic
-    @Column(name = "id_number")
-    private String idNumber;
-
-    @Basic
-    @Column(name = "phone_number")
-    private String phoneNumber;
-
-    @Basic
-    @Column(name = "address")
-    private String address;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "auth_user_id", referencedColumnName = "id")
-    private AuthUser authUser;
-
-    public UserInfo(String displayName) {
-        this.displayName = displayName;
-    }
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @Id
+//    @Column(name = "id")
+//    private int id;
+//
+//    @Basic
+//    @Column(name = "display_name")
+//    private String displayName;
+//
+//    @Basic
+//    @Column(name = "cover_image")
+//    private String coverImage;
+//
+//    @Basic
+//    @Column(name = "avatar_image")
+//    private String avatarImage;
+//
+//    @Basic
+//    @Column(name = "description")
+//    private String description;
+//
+//    @Basic
+//    @Column(name = "date_of_birth")
+//    private LocalDateTime dateOfBirth;
+//
+//    @Basic
+//    @Column(name = "gender")
+//    private EGender gender;
+//
+//    @Basic
+//    @Column(name = "id_number")
+//    private String idNumber;
+//
+//    @Basic
+//    @Column(name = "phone_number")
+//    private String phoneNumber;
+//
+//    @Basic
+//    @Column(name = "address")
+//    private String address;
+//
+//    @OneToOne(cascade = CascadeType.ALL)
+//    @JoinColumn(name = "auth_user_id", referencedColumnName = "id")
+//    private AuthUser authUser;
+//
+//    public UserInfo(String displayName) {
+//        this.displayName = displayName;
+//    }
 }

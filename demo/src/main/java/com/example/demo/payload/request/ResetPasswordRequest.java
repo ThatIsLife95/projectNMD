@@ -1,4 +1,4 @@
-package com.example.demo.dto;
+package com.example.demo.payload.request;
 
 import com.example.demo.constants.RegexConstants;
 import lombok.Data;
@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 @Data
-public class ResetPasswordDto {
+public class ResetPasswordRequest {
     @Email
     @NotNull(message = "Email là bắt buộc")
     private String email;

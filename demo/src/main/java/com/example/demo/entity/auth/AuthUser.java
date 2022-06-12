@@ -1,6 +1,8 @@
 package com.example.demo.entity.auth;
 
 import com.example.demo.entity.UserInfo;
+import com.example.demo.entity.audit.DateAudit;
+import com.example.demo.enums.EGender;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,7 +21,7 @@ import java.util.stream.Collectors;
 @Setter
 @Table(name = "auth_user")
 @NoArgsConstructor
-public class AuthUser {
+public class AuthUser extends DateAudit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id")
@@ -29,9 +31,41 @@ public class AuthUser {
     @Column(name = "username",nullable = false, unique = true)
     private String username;
 
-//    @Basic
-//    @Column(name = "display_name")
-//    private String displayName;
+    @Basic
+    @Column(name = "display_name")
+    private String displayName;
+
+    @Basic
+    @Column(name = "cover_image")
+    private String coverImage;
+
+    @Basic
+    @Column(name = "avatar_image")
+    private String avatarImage;
+
+    @Basic
+    @Column(name = "description")
+    private String description;
+
+    @Basic
+    @Column(name = "date_of_birth")
+    private LocalDateTime dateOfBirth;
+
+    @Basic
+    @Column(name = "gender")
+    private EGender gender;
+
+    @Basic
+    @Column(name = "id_number")
+    private String idNumber;
+
+    @Basic
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
+    @Basic
+    @Column(name = "address")
+    private String address;
 
     @Basic
     @Column(name = "email", unique = true)
@@ -69,21 +103,25 @@ public class AuthUser {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<AuthDevice> devices = new HashSet<>();
 
-    @OneToOne(mappedBy = "authUser", cascade = CascadeType.ALL)
-    private UserInfo userInfo;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<AuthUserHistory> userHistories = new ArrayList<>();
 
-    public AuthUser(String username, String email, String password, boolean status, LocalDateTime expireDate) {
+//    @OneToOne(mappedBy = "authUser", cascade = CascadeType.ALL)
+//    private UserInfo userInfo;
+
+    public AuthUser(String username, String email, String displayName, String password, boolean status, LocalDateTime expireDate) {
         this.username = username;
         this.email = email;
+        this.displayName = displayName;
         this.password = password;
         this.status = status;
         this.expireDate = expireDate;
     }
 
-    public void setUserInfo(UserInfo userInfo) {
-        this.userInfo = userInfo;
-        userInfo.setAuthUser(this);
-    }
+//    public void setUserInfo(UserInfo userInfo) {
+//        this.userInfo = userInfo;
+//        userInfo.setAuthUser(this);
+//    }
 
     public void addDevice(AuthDevice device) {
         devices.add(device);
@@ -92,7 +130,7 @@ public class AuthUser {
 
     public void addRole(AuthRole role) {
         roles.add(role);
-        role.getUsers().add(this);
+//        role.getUsers().add(this);
     }
 
     public List<SimpleGrantedAuthority> getAuthorities() {

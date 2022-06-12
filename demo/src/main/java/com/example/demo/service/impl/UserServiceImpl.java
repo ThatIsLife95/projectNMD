@@ -2,12 +2,13 @@ package com.example.demo.service.impl;
 
 import com.example.demo.constants.DefaultConstants;
 import com.example.demo.constants.HttpStatusConstants;
-import com.example.demo.dto.*;
-import com.example.demo.entity.UserInfo;
+import com.example.demo.payload.*;
 import com.example.demo.entity.auth.AuthUser;
 import com.example.demo.exceptions.BusinessException;
+import com.example.demo.payload.request.PageRequest;
+import com.example.demo.payload.request.ChangePasswordRequest;
+import com.example.demo.payload.response.ResponseEntity;
 import com.example.demo.repository.AuthUserRepository;
-import com.example.demo.repository.UserInfoRepository;
 import com.example.demo.service.UserService;
 import com.example.demo.utils.Common;
 import lombok.AllArgsConstructor;
@@ -26,60 +27,59 @@ public class UserServiceImpl implements UserService {
 
     private final AuthUserRepository userRepository;
 
-    private final UserInfoRepository userInfoRepository;
-
     private final ModelMapper modelMapper;
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
-    public ResponseDto<?> getUsers(PageRequestDto pageRequestDto) {
-        String sortType = pageRequestDto.getSortType();
+    public ResponseEntity<?> getUsers(PageRequest pageRequest) {
+        String sortType = pageRequest.getSortType();
         // Chưa validate sortColumn có hợp lệ hay không
-        String sortColumn = pageRequestDto.getSortColumn();
+        String sortColumn = pageRequest.getSortColumn();
         Sort sortable = Sort.by(sortColumn).ascending();
         if (DefaultConstants.DESC_SORT_TYPE.equals(sortType)) {
             sortable = Sort.by(sortColumn).descending();
         }
-        Pageable pageable = PageRequest.of(pageRequestDto.getPage(), pageRequestDto.getSize(), sortable);
-        Specification<AuthUser> conditions = Common.getSpecifications(pageRequestDto.getFilters());
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getSize(), sortable);
+        Specification<AuthUser> conditions = Common.getSpecifications(pageRequest.getFilters());
         Page<AuthUser> authUsersPage = userRepository.findAll(conditions, pageable);
         List<UserDto> users = authUsersPage.getContent().stream().map(authUser -> modelMapper.map(authUser, UserDto.class)).collect(Collectors.toList());
         Page<UserDto> usersPage = new PageImpl<>(users, authUsersPage.getPageable(), authUsersPage.getTotalElements());
-        return ResponseDto.ok(usersPage);
+        return ResponseEntity.ok(usersPage);
     }
 
     @Override
-    public ResponseDto<?> getUser(Integer id) {
+    public ResponseEntity<?> getUser(Integer id) {
         AuthUser authUser = userRepository.findById(id).orElseThrow(
                 () -> new BusinessException(HttpStatusConstants.USERNAME_NOT_EXISTED_CODE, HttpStatusConstants.USERNAME_NOT_EXISTED_MESSAGE)
         );
-        return ResponseDto.ok(modelMapper.map(authUser, UserDto.class));
+        return ResponseEntity.ok(modelMapper.map(authUser, UserDto.class));
     }
 
     @Override
-    public ResponseDto<?> updateUserInfo(Integer id, UserInfoDto userInfoDto) {
-        UserInfo userInfo = userInfoRepository.findByAuthUser_Id(id).orElseThrow(
-                () -> new BusinessException(HttpStatusConstants.USERNAME_NOT_EXISTED_CODE, HttpStatusConstants.USERNAME_NOT_EXISTED_MESSAGE)
-        );
-        int id1 = userInfo.getId();
-        modelMapper.map(userInfoDto, userInfo);
-        userInfo.setId(id1);
-        UserInfo userInfoResponse = userInfoRepository.save(userInfo);
-        return ResponseDto.ok(modelMapper.map(userInfoResponse, UserInfoDto.class));
+    public ResponseEntity<?> updateUserInfo(Integer id, UserInfoDto userInfoDto) {
+//        UserInfo userInfo = userInfoRepository.findByAuthUser_Id(id).orElseThrow(
+//                () -> new BusinessException(HttpStatusConstants.USERNAME_NOT_EXISTED_CODE, HttpStatusConstants.USERNAME_NOT_EXISTED_MESSAGE)
+//        );
+//        int id1 = userInfo.getId();
+//        modelMapper.map(userInfoDto, userInfo);
+//        userInfo.setId(id1);
+//        UserInfo userInfoResponse = userInfoRepository.save(userInfo);
+//        return ResponseEntity.ok(modelMapper.map(userInfoResponse, UserInfoDto.class));
+        return null;
     }
 
     @Override
-    public ResponseDto<?> changePassword(Integer id, PasswordDto passwordDto) {
+    public ResponseEntity<?> changePassword(Integer id, ChangePasswordRequest changePasswordRequest) {
         AuthUser authUser = userRepository.findById(id).orElseThrow(
                 () -> new BusinessException(HttpStatusConstants.USERNAME_NOT_EXISTED_CODE, HttpStatusConstants.USERNAME_NOT_EXISTED_MESSAGE)
         );
-        String oldPasswordHash = bCryptPasswordEncoder.encode(passwordDto.getOldPassword());
+        String oldPasswordHash = bCryptPasswordEncoder.encode(changePasswordRequest.getOldPassword());
         if (authUser.getPassword().equals(oldPasswordHash)) {
-            authUser.setPassword(bCryptPasswordEncoder.encode(passwordDto.getNewPassword()));
+            authUser.setPassword(bCryptPasswordEncoder.encode(changePasswordRequest.getNewPassword()));
             userRepository.save(authUser);
-            return ResponseDto.ok(null);
+            return ResponseEntity.ok(null);
         }
-        return ResponseDto.error(HttpStatusConstants.INVALID_OLD_PASSWORD_CODE, HttpStatusConstants.INVALID_OLD_PASSWORD_MESSAGE);
+        return ResponseEntity.error(HttpStatusConstants.INVALID_OLD_PASSWORD_CODE, HttpStatusConstants.INVALID_OLD_PASSWORD_MESSAGE);
     }
 }

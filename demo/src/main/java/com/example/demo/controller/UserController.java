@@ -1,10 +1,10 @@
 package com.example.demo.controller;
 
 import com.example.demo.constants.UriConstants;
-import com.example.demo.dto.PageRequestDto;
-import com.example.demo.dto.PasswordDto;
-import com.example.demo.dto.ResponseDto;
-import com.example.demo.dto.UserInfoDto;
+import com.example.demo.payload.request.PageRequest;
+import com.example.demo.payload.request.ChangePasswordRequest;
+import com.example.demo.payload.response.ResponseEntity;
+import com.example.demo.payload.UserInfoDto;
 import com.example.demo.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,26 +20,26 @@ public class UserController {
 
     @GetMapping()
     @PreAuthorize("hasAuthority('USER_READ')")
-    public ResponseDto<?> getUsers(@RequestBody PageRequestDto pageRequestDto) {
-        return userService.getUsers(pageRequestDto);
+    public ResponseEntity<?> getUsers(@RequestBody PageRequest pageRequest) {
+        return userService.getUsers(pageRequest);
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('USER_READ')")
-    public ResponseDto<?> getUser(@PathVariable Integer id) {
+    public ResponseEntity<?> getUser(@PathVariable Integer id) {
         return userService.getUser(id);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('USER_WRITE') or #id == authentication.principal.id")
-    public ResponseDto<?> updateUserInfo(@PathVariable Integer id, @RequestBody UserInfoDto userInfoDto) {
+    public ResponseEntity<?> updateUserInfo(@PathVariable Integer id, @RequestBody UserInfoDto userInfoDto) {
         return userService.updateUserInfo(id, userInfoDto);
     }
 
     @PutMapping("change-password/{id}")
     @PreAuthorize("hasAuthority('USER_WRITE') or #id == authentication.principal.id")
-    public ResponseDto<?> changePassword(@PathVariable Integer id, @RequestBody PasswordDto passwordDto) {
-        return userService.changePassword(id, passwordDto);
+    public ResponseEntity<?> changePassword(@PathVariable Integer id, @RequestBody ChangePasswordRequest changePasswordRequest) {
+        return userService.changePassword(id, changePasswordRequest);
     }
 
 //    @DeleteMapping("/{id}")

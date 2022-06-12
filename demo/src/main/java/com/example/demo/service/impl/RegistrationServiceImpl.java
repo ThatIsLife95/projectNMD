@@ -2,8 +2,7 @@ package com.example.demo.service.impl;
 
 import com.example.demo.constants.DefaultConstants;
 import com.example.demo.constants.HttpStatusConstants;
-import com.example.demo.dto.RegistrationDto;
-import com.example.demo.entity.UserInfo;
+import com.example.demo.payload.request.RegistrationRequest;
 import com.example.demo.entity.auth.AuthDevice;
 import com.example.demo.entity.auth.AuthRole;
 import com.example.demo.entity.auth.AuthUser;
@@ -42,23 +41,22 @@ public class RegistrationServiceImpl implements RegistrationService {
     }
 
     @Override
-    public void registerUser(RegistrationDto registrationDto, String deviceLocation, String deviceDetails) {
-        String email = registrationDto.getEmail();
-        String username = registrationDto.getUsername();
+    public void registerUser(RegistrationRequest registrationRequest, String deviceLocation, String deviceDetails) {
+        String email = registrationRequest.getEmail();
+        String username = registrationRequest.getUsername();
         if (isExistedEmail(email) != null) {
             throw new BusinessException(HttpStatusConstants.EMAIL_EXISTED_CODE, HttpStatusConstants.EMAIL_EXISTED_MESSAGE);
         } else if (isExistedUsername(username)) {
             throw new BusinessException(HttpStatusConstants.USERNAME_EXISTED_CODE, HttpStatusConstants.USERNAME_EXISTED_MESSAGE);
         } else {
             AuthUser user = new AuthUser(
-                    registrationDto.getUsername(),
-                    registrationDto.getEmail(),
-                    bCryptPasswordEncoder.encode(registrationDto.getPassword()),
+                    registrationRequest.getUsername(),
+                    registrationRequest.getEmail(),
+                    registrationRequest.getDisplayName(),
+                    bCryptPasswordEncoder.encode(registrationRequest.getPassword()),
                     true,
                     LocalDateTime.now().plusMonths(DefaultConstants.EXPIRE_MONTH_PASSWORD)
             );
-            UserInfo userInfo = new UserInfo(registrationDto.getDisplayName());
-            user.setUserInfo(userInfo);
             AuthDevice device = new AuthDevice(
                     deviceLocation,
                     deviceDetails,

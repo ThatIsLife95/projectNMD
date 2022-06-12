@@ -1,25 +1,13 @@
 package com.example.demo.utils;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.DecodedJWT;
-import com.example.demo.constants.JwtConstants;
-import com.example.demo.dto.CustomUserDetails;
-import com.example.demo.dto.FilterDto;
+import com.example.demo.payload.request.FilterRequest;
 import com.example.demo.entity.auth.AuthUser;
 import com.example.demo.enums.ESearchOperation;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Common {
     public static String getToken() {
@@ -35,30 +23,30 @@ public class Common {
         return  templateModel;
     }
 
-    public static Specification<AuthUser> getSpecifications(List<FilterDto> filters) {
+    public static Specification<AuthUser> getSpecifications(List<FilterRequest> filters) {
         if (filters.size() == 0) {
             return null;
         }
         Specification<AuthUser> conditions = Specification.where(getSpecification(filters.remove(0)));
-        for (FilterDto filterDto : filters) {
-            conditions = conditions.and(getSpecification(filterDto));
+        for (FilterRequest filterRequest : filters) {
+            conditions = conditions.and(getSpecification(filterRequest));
         }
         return conditions;
     }
 
-    public static Specification<AuthUser> getSpecification(FilterDto filterDto) {
+    public static Specification<AuthUser> getSpecification(FilterRequest filterRequest) {
         try {
-            String key = filterDto.getKey();
+            String key = filterRequest.getKey();
             String type = AuthUser.class.getDeclaredField(key).getGenericType().getTypeName();
             // Chưa constant
             if ("java.lang.String".equals(type)) {
-                return createSpecificationWithStringType(key, filterDto.getOperation(), filterDto.getValue());
+                return createSpecificationWithStringType(key, filterRequest.getOperation(), filterRequest.getValue());
             } else if ("int".equals(type)) {
-                return createSpecificationWithIntegerType(key, filterDto.getOperation(), Integer.parseInt(filterDto.getValue()));
+                return createSpecificationWithIntegerType(key, filterRequest.getOperation(), Integer.parseInt(filterRequest.getValue()));
             } else if ("java.time.LocalDateTime".equals(type)) {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                LocalDateTime dateTime = LocalDateTime.parse(filterDto.getValue(), formatter);
-                return createSpecificationWithLocalDateTimeType(key, filterDto.getOperation(), LocalDateTime.parse(filterDto.getValue(), formatter));
+                LocalDateTime dateTime = LocalDateTime.parse(filterRequest.getValue(), formatter);
+                return createSpecificationWithLocalDateTimeType(key, filterRequest.getOperation(), LocalDateTime.parse(filterRequest.getValue(), formatter));
             }
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
@@ -116,13 +104,13 @@ public class Common {
         }
     }
 
-    public static String getJWT(CustomUserDetails user, HttpServletRequest request, long expirationTime) {
-        Algorithm algorithm = Algorithm.HMAC256(JwtConstants.SECRET.getBytes());
-        return JWT.create()
-                .withSubject(user.getUsername())
-                .withExpiresAt(new Date(System.currentTimeMillis() + expirationTime))
-                .withIssuer(request.getRequestURL().toString())
-                .withClaim(JwtConstants.ROLES, user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
-                .sign(algorithm);
-    }
+//    public static String getJWT(CustomUserDetails user, HttpServletRequest request, long expirationTime) {
+//        Algorithm algorithm = Algorithm.HMAC256(JwtConstants.SECRET.getBytes());
+//        return JWT.create()
+//                .withSubject(user.getUsername())
+//                .withExpiresAt(new Date(System.currentTimeMillis() + expirationTime))
+//                .withIssuer(request.getRequestURL().toString())
+//                .withClaim(JwtConstants.ROLES, user.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
+//                .sign(algorithm);
+//    }
 }

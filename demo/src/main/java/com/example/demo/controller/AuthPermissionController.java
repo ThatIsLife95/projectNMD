@@ -2,8 +2,8 @@ package com.example.demo.controller;
 
 
 import com.example.demo.constants.UriConstants;
-import com.example.demo.dto.PermissionDto;
-import com.example.demo.dto.ResponseDto;
+import com.example.demo.payload.PermissionDto;
+import com.example.demo.payload.response.ResponseEntity;
 import com.example.demo.service.AuthPermissionService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,27 +18,27 @@ public class AuthPermissionController {
     private final AuthPermissionService permissionService;
 
     @GetMapping()
-    public ResponseDto<?> getPermissions() {
+    public ResponseEntity<?> getPermissions() {
         return permissionService.getPermissions();
     }
 
     @GetMapping("/{id}")
-    public ResponseDto<?> getPermission(@PathVariable Integer id) {
+    public ResponseEntity<?> getPermission(@PathVariable Integer id) {
         return permissionService.getPermission(id);
     }
 
     @PostMapping()
-    public ResponseDto<?> createPermission(@RequestBody PermissionDto permissionDto) {
+    public ResponseEntity<?> createPermission(@RequestBody PermissionDto permissionDto) {
         return permissionService.createPermission(permissionDto);
     }
 
     @PutMapping("/{id}")
-    public ResponseDto<?> updatePermission(@PathVariable Integer id, @RequestBody PermissionDto permissionDto) {
+    public ResponseEntity<?> updatePermission(@PathVariable Integer id, @RequestBody PermissionDto permissionDto) {
         return permissionService.updatePermission(id, permissionDto);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseDto<?> updatePermission(@PathVariable Integer id) {
+    public ResponseEntity<?> updatePermission(@PathVariable Integer id) {
         return permissionService.deletePermission(id);
     }
 }
