@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -53,10 +54,14 @@ public class RegistrationServiceImpl implements RegistrationService {
                     registrationRequest.getUsername(),
                     registrationRequest.getEmail(),
                     registrationRequest.getDisplayName(),
-                    bCryptPasswordEncoder.encode(registrationRequest.getPassword()),
                     true,
-                    LocalDateTime.now().plusMonths(DefaultConstants.EXPIRE_MONTH_PASSWORD)
+                    Instant.now().plusSeconds(DefaultConstants.EXPIRATION_PASSWORD)
             );
+            String passwordRequest = registrationRequest.getPassword();
+            if (passwordRequest != null) {
+                user.setPassword(bCryptPasswordEncoder.encode(passwordRequest));
+
+            }
             AuthDevice device = new AuthDevice(
                     deviceLocation,
                     deviceDetails,

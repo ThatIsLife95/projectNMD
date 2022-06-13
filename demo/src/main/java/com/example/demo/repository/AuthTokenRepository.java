@@ -9,4 +9,6 @@ import java.util.Optional;
 @Repository
 public interface AuthTokenRepository extends JpaRepository<AuthToken, Integer> {
     public Optional<AuthToken> findByEmail(String email);
+
+    public Optional<AuthToken> findByEmailAndStatus(String email, boolean status);
 }

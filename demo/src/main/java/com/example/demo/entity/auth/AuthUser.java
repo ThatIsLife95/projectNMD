@@ -1,7 +1,7 @@
 package com.example.demo.entity.auth;
 
-import com.example.demo.entity.UserInfo;
 import com.example.demo.entity.audit.DateAudit;
+import com.example.demo.enums.EAuthProvider;
 import com.example.demo.enums.EGender;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,7 +9,7 @@ import lombok.Setter;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -28,7 +28,7 @@ public class AuthUser extends DateAudit {
     private int id;
 
     @Basic
-    @Column(name = "username",nullable = false, unique = true)
+    @Column(name = "username", nullable = false, unique = true)
     private String username;
 
     @Basic
@@ -49,7 +49,7 @@ public class AuthUser extends DateAudit {
 
     @Basic
     @Column(name = "date_of_birth")
-    private LocalDateTime dateOfBirth;
+    private Instant dateOfBirth;
 
     @Basic
     @Column(name = "gender")
@@ -85,11 +85,11 @@ public class AuthUser extends DateAudit {
 
     @Basic
     @Column(name = "last_login")
-    private LocalDateTime lastLogin;
+    private Instant lastLogin;
 
     @Basic
     @Column(name = "password_expired_date")
-    private LocalDateTime expireDate;
+    private Instant expireDate;
 
     @ManyToMany
     @JoinTable(
@@ -106,14 +106,20 @@ public class AuthUser extends DateAudit {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<AuthUserHistory> userHistories = new ArrayList<>();
 
+    @Basic
+    @Column(name = "provider")
+    private EAuthProvider provider;
+
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+//    private Set<AuthProvider> providers = new HashSet<>();
+
 //    @OneToOne(mappedBy = "authUser", cascade = CascadeType.ALL)
 //    private UserInfo userInfo;
 
-    public AuthUser(String username, String email, String displayName, String password, boolean status, LocalDateTime expireDate) {
+    public AuthUser(String username, String email, String displayName, boolean status, Instant expireDate) {
         this.username = username;
         this.email = email;
         this.displayName = displayName;
-        this.password = password;
         this.status = status;
         this.expireDate = expireDate;
     }

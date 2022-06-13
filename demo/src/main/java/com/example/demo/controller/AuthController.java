@@ -10,7 +10,7 @@ import com.example.demo.payload.request.LoginRequest;
 import com.example.demo.payload.request.RegistrationRequest;
 import com.example.demo.payload.request.ResetPasswordRequest;
 import com.example.demo.payload.response.ResponseEntity;
-import com.example.demo.sercurity.CustomUserDetails;
+import com.example.demo.sercurity.UserPrincipal;
 import com.example.demo.sercurity.JwtTokenProvider;
 import com.example.demo.service.*;
 import com.example.demo.utils.Common;
@@ -91,7 +91,7 @@ public class AuthController {
         try {
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(emailOrUsername, loginRequest.getPassword());
             Authentication authentication = authenticationManager.authenticate(authenticationToken);
-            CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
+            UserPrincipal user = (UserPrincipal) authentication.getPrincipal();
             String username = user.getUsername();
 //            deviceLocation = "192.168.1.1";
 //            deviceDetails = "IP 7";
@@ -113,11 +113,7 @@ public class AuthController {
                         HttpStatusConstants.VERIFY_NEW_DEVICE_MESSAGE,
                         null);
             }
-            String accessToken = jwtTokenProvider.generateAccessToken(user, request);
-            String refreshToken = jwtTokenProvider.generateRefreshToken(user, request);
-            Map<String, String> tokens = new HashMap<>();
-            tokens.put("access_token", accessToken);
-            tokens.put("refresh_token", refreshToken);
+            Map<String, String> tokens = jwtTokenProvider.getTokens(user, request);
             // đăng nhập thành công đổi trạng thái action
             actionStatus = true;
             return ResponseEntity.ok(tokens);

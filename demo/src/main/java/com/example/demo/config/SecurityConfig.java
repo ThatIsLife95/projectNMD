@@ -1,6 +1,8 @@
 package com.example.demo.config;
 
 import com.example.demo.filter.CustomAuthorizationFilter;
+import com.example.demo.sercurity.CustomOAuth2UserService;
+import com.example.demo.sercurity.OAuth2AuthenticationSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +23,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
 
+//    private final CustomOAuth2UserService customOAuth2UserService;
+
+    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder());
@@ -37,9 +44,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeHttpRequests().antMatchers("/api/v1/role/**").hasRole("SUPER_ADMIN");
         http.authorizeHttpRequests().antMatchers("/api/v1/permission/**").hasRole("SUPER_ADMIN");
         http.authorizeHttpRequests().anyRequest().authenticated();
-        http.oauth2Login().redirectionEndpoint().baseUri("/oauth2/callback/*");
+        http.oauth2Login().redirectionEndpoint().baseUri("/oauth2/callback/*")
 //                .and()
-//                .userInfoEndpoint().userService(customOAuth2UserService);
+//                .userInfoEndpoint().userService(customOAuth2UserService)
+                .and()
+                .successHandler(oAuth2AuthenticationSuccessHandler);
         http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 

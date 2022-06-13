@@ -1,6 +1,6 @@
 package com.example.demo.config;
 
-import com.example.demo.sercurity.CustomUserDetails;
+import com.example.demo.sercurity.UserPrincipal;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,7 +18,6 @@ public class SpringSecurityAuditAwareImpl implements AuditorAware<String> {
                 authentication instanceof AnonymousAuthenticationToken) {
             return Optional.empty();
         }
-        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-        return Optional.ofNullable(customUserDetails.getUsername());
+        return Optional.ofNullable(authentication.getName());
     }
 }

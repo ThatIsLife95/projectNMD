@@ -1,7 +1,7 @@
 package com.example.demo.service.impl;
 
 import com.example.demo.entity.auth.AuthUser;
-import com.example.demo.sercurity.CustomUserDetails;
+import com.example.demo.sercurity.UserPrincipal;
 import com.example.demo.repository.AuthUserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String emailOrUsername) throws UsernameNotFoundException {
         AuthUser authUser = authUserRepository.findByEmailOrUsername(emailOrUsername, emailOrUsername).orElseThrow(() -> new UsernameNotFoundException("Username or Email not found"));
-        return new CustomUserDetails(
+        return new UserPrincipal(
                 authUser.getId(),
                 authUser.getUsername(),
                 authUser.getEmail(),

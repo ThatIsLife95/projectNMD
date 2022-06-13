@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Entity
 @Getter
@@ -29,11 +29,11 @@ public class AuthToken extends DateAudit {
 
     @Basic
     @Column(name = "expired_date")
-    private LocalDateTime expiredDate;
+    private Instant expiredDate;
 
     @Basic
-    @Column(name = "is_confirmed", nullable = false)
-    private boolean isConfirmed;
+    @Column(name = "status", nullable = false)
+    private boolean status;
 
     public AuthToken(String email) {
         this.email = email;

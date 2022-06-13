@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -24,16 +26,16 @@ public class JwtTokenProvider {
     @Value("${app.auth.jwtRefreshExpirationInMs}")
     private int jwtRefreshExpirationInMs;
 
-
-    public String generateAccessToken(CustomUserDetails user, HttpServletRequest request) {
-        return generateToken(user, request, jwtAccessExpirationInMs);
+    public Map<String, String> getTokens(UserPrincipal user, HttpServletRequest request) {
+        String accessToken = generateToken(user, request,jwtAccessExpirationInMs);
+        String refreshToken = generateToken(user, request, jwtRefreshExpirationInMs);
+        Map<String, String> tokens = new HashMap<>();
+        tokens.put("access_token", accessToken);
+        tokens.put("refresh_token", refreshToken);
+        return tokens;
     }
 
-    public String generateRefreshToken(CustomUserDetails user, HttpServletRequest request) {
-        return generateToken(user, request, jwtRefreshExpirationInMs);
-    }
-
-    public String generateToken(CustomUserDetails user, HttpServletRequest request, int jwtExpirationInMs) {
+    private String generateToken(UserPrincipal user, HttpServletRequest request, int jwtExpirationInMs) {
         Algorithm algorithm = Algorithm.HMAC256(jwtSecret);
         return JWT.create()
                 .withSubject(user.getUsername())

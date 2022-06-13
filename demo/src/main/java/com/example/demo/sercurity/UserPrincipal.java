@@ -1,29 +1,30 @@
 package com.example.demo.sercurity;
 
 import com.example.demo.entity.auth.AuthDevice;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.time.Instant;
+import java.util.*;
 
-@Data
-public class CustomUserDetails implements UserDetails {
+@Getter
+@Setter
+@NoArgsConstructor
+public class UserPrincipal implements UserDetails {
     private int id;
     private String username;
     private String email;
     private String password;
     private List<SimpleGrantedAuthority> authorities;
     private boolean status;
-    private LocalDateTime expireDate;
+    private Instant expireDate;
     private Set<AuthDevice> deviceInfos = new HashSet<>();
 
-    public CustomUserDetails(int id, String username,String email, String password, List<SimpleGrantedAuthority> authorities, boolean status, LocalDateTime expireDate, Set<AuthDevice> deviceInfos) {
+    public UserPrincipal(int id, String username, String email, String password, List<SimpleGrantedAuthority> authorities, boolean status, Instant expireDate, Set<AuthDevice> deviceInfos) {
         this.id = id;
         this.username = username;
         this.email = email;
@@ -50,21 +51,8 @@ public class CustomUserDetails implements UserDetails {
     }
 
     @Override
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
-    public String getUsername() {
-        return username;
-    }
-
-    @Override
     public boolean isAccountNonExpired() {
-        if (LocalDateTime.now().isBefore(expireDate)) {
-            return true;
-        }
-        return false;
+        return Instant.now().isBefore(expireDate);
     }
 
     @Override

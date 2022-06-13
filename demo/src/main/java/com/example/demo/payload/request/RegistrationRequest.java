@@ -20,7 +20,7 @@ public class RegistrationRequest {
     private String email;
 
     @Pattern(regexp = RegexConstants.PASSWORD_REGEX, message = "Mật khẩu phải chứa chữ cái, số và kí tự đặc biệt, viết thường và viết hoa")
-    @NotNull(message = "Mật khẩu là bắt buộc")
+//    @NotNull(message = "Mật khẩu là bắt buộc")
     private String password;
 
     private String token;
